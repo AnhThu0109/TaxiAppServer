@@ -1,0 +1,32 @@
+{
+  "name": "taxiappserver",
+  "version": "1.0.0",
+  "description": "Project TaxiApp",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinhly123/TaxiAppServer.git"
+  },
+  "author": "Vinh Ly",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vinhly123/TaxiAppServer/issues"
+  },
+  "homepage": "https://github.com/vinhly123/TaxiAppServer#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.33.0",
+    "sequelize-cli": "^6.6.1",
+    "jsonwebtoken": "^9.0.0",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6"
+  }
+}
