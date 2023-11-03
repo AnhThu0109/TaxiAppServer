@@ -3,41 +3,67 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 let models = require('../models');
-let Customer = models.Customer;
+let Driver = models.Driver;
 
 
-const customerController = {
+const driverController = {
     register: async (req, res) => {
         try {
-            const { phoneNo, password, fullname, gender, email, avatarPath } = req.body;
+            const { phoneNo, password, fullname, email, gender, avatarPath, licensePlate } = req.body;
             console.log(req.body);
             
-            if (!phoneNo || !password || !fullname) {
-                res.status(400).send('Phone number or password is missing')
+            if (!phoneNo) {
+                res.status(400).send('Phone number is missing')
+                return;
+            }
+            if (!password || !fullname) {
+                res.status(400).send('Password is missing')
+                return;
+            }
+            if (!fullname) {
+                res.status(400).send('Fullname is missing')
+                return;
+            }
+            if (!licensePlate) {
+                res.status(400).send('License plate is missing')
                 return;
             }
             else {
-                const user = await Customer.findOne({ 
-                    where: { phoneNo : phoneNo}
+                const driver = await Driver.findOne({ 
+                    where: [{ phoneNo : phoneNo}, {licensePlate: licensePlate}]
                  });
                                             
                                             
                 //console.log(user);
-                if (user) {
-                    res.status(400).send('Phone number already exists')
+                if (driver) {
+                    res.status(400).send('Phone number or License plate already exists')
                     return;
                 }
                 else {
                     const passwordHash = await bcrypt.hash(password, 10);
                    //ghi dữ liệu customer xuống db
-                    await Customer.create({
+                   //console.log(username,passwordHash,fullname,phoneNo,gender,avatarPath);
+                    /*await Driver.create({
                         phoneNo: phoneNo,
                         password: passwordHash,
                         fullname: fullname,
-                        gender: gender,
                         email: email,
-                        avatarPath: avatarPath
-                    });
+                        gender: gender,
+                        avatarPath: avatarPath,
+                        licensePlate: licensePlate
+                    });*/
+                    
+                    const newDriver = new Driver({
+                        phoneNo: phoneNo,
+                        password: passwordHash,
+                        fullname: fullname,
+                        email: email,
+                        gender: gender,
+                        avatarPath: avatarPath,
+                        licensePlate: licensePlate
+                    })
+                    console.log(newDriver);
+                    await newDriver.save();
                     const token = jwt.sign(phoneNo, process.env.ACCESS_TOKEN_SECRET);
                     console.log(token)
                     res.send({ 
@@ -57,15 +83,15 @@ const customerController = {
             res.status(400).send('Phone number or password is missing')
             return;
         }
-        const user = await Customer.findOne({ 
+        const driver = await Driver.findOne({ 
             where: { phoneNo : phoneNo}
          })
-        if (!user) {
+        if (!admin) {
             res.status(404).send('Phone number not found')
             return;
         }
         else {
-            let isCorret = await bcrypt.compare(password, user.password)
+            let isCorret = await bcrypt.compare(password, driver.password)
             if (!isCorret) {
                 res.status(400).send('Incorrect password')
                 return;
@@ -78,4 +104,4 @@ const customerController = {
         }
     },
 }
-module.exports = customerController
+module.exports = driverController

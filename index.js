@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const dotenv = require('dotenv').config();
+const cors = require('cors');
 
 app.set('port',process.env.PORT || 5000);
 app.listen(app.get('port'), () =>{
@@ -15,6 +17,9 @@ app.use(cookieParser());
 
 app.use('/v1/customers', require('./routes/customerRouter'));
 
+app.use('/v1/admin', require('./routes/adminRouter'));
+
+app.use('/v1/driver', require('./routes/driverRouter'));
 
 app.get('/sync', (req, res) => {
     let models = require('./models');
