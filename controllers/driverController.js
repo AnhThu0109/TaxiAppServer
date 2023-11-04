@@ -62,8 +62,12 @@ const driverController = {
                         avatarPath: avatarPath,
                         licensePlate: licensePlate
                     })
-                    console.log(newDriver);
-                    await newDriver.save();
+                    console.log(newDriver instanceof Driver);
+                    newDriver.save().then(result => {
+                        console.log(result);
+                    }).catch( error => {
+                        console.log(error);
+                    });
                     const token = jwt.sign(phoneNo, process.env.ACCESS_TOKEN_SECRET);
                     console.log(token)
                     res.send({ 
@@ -86,7 +90,7 @@ const driverController = {
         const driver = await Driver.findOne({ 
             where: { phoneNo : phoneNo}
          })
-        if (!admin) {
+        if (!driver) {
             res.status(404).send('Phone number not found')
             return;
         }

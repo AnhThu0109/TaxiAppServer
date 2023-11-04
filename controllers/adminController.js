@@ -47,6 +47,7 @@ const adminController = {
                         gender: gender,
                         avatarPath: avatarPath
                     })
+                    console.log(newAdmin);
                     await newAdmin.save();
                     const token = jwt.sign(username, process.env.ACCESS_TOKEN_SECRET);
                     console.log(token)
@@ -77,12 +78,21 @@ const adminController = {
         else {
             let isCorret = await bcrypt.compare(password, admin.password)
             if (!isCorret) {
-                res.status(400).send('Incorrect password')
+                res.status(400).send({
+                    status: 400,
+                    message: 'Tên người dùng hoặc mật khẩu không đúng.'
+                })
                 return;
             }
             const token = jwt.sign(username, process.env.ACCESS_TOKEN_SECRET);
             res.send({ 
-                msg: 'Login successful',
+                status: 200,
+                message: 'Đăng nhập thành công!',
+                data: {
+                    id: admin.id,
+                    username: username,
+                    phonenumber: admin.phoneNo
+                },
                 token: token 
             });
         }
