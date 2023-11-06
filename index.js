@@ -21,6 +21,10 @@ app.use('/v1/admin', require('./routes/adminRouter'));
 
 app.use('/v1/driver', require('./routes/driverRouter'));
 
+app.use('/v1/booking', require('./routes/bookingRouter'));
+
+
+
 app.get('/sync', (req, res) => {
     let models = require('./models');
     models.sequelize.sync()

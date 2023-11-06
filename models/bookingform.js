@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       BookingForm.hasOne(models.BookingInfo, {foreignKey: 'bookingFormId'});
       BookingForm.hasOne(models.Bill, {foreignKey: 'bookingFormId'});
       BookingForm.hasMany(models.Location, {foreignKey: 'bookingFormId'});
+      BookingForm.belongsTo(models.BookingStatusId , {foreignKey: 'status'});
     }
   }
   BookingForm.init({
@@ -26,6 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     bookingWay: DataTypes.INTEGER,
     status: DataTypes.INTEGER,
     bookingTime: DataTypes.DATE,
+    Trip_Start_Time: DataTypes.TIME,
+    Trip_End_Time: DataTypes.TIME
   }, {
     sequelize,
     modelName: 'BookingForm',
