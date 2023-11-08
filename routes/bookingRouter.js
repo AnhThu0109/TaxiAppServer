@@ -13,6 +13,25 @@ router.get('/', auth,(req, res, next) => {
         .catch(error => next(error));
 
 });
+router.get('/admin/:id', auth,(req, res, next) => {
+    let bookingController = require('../controllers/bookingController');
+    bookingController
+        .getByAdminId(req.params.id)
+        .then(data => {
+            res.send(data);
+        })
+        .catch(error => next(error));
 
+});
+router.get('/:id', auth,(req, res, next) => {
+    let bookingController = require('../controllers/bookingController');
+    bookingController
+        .getByBookingId(req.params.id)
+        .then(data => {
+            res.send(data);
+        })
+        .catch(error => next(error));
+
+});
 
 module.exports = router;
