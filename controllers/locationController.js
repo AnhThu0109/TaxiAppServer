@@ -1,25 +1,40 @@
-let controller = {};
-const { query } = require('express');
-let models = require('../models');
-let Location = models.Location;
-let Sequelize = require('sequelize');
-let Op = Sequelize.Op;
+const models = require('../models');
+const Location = models.Location;
+const { validationResult } = require('express-validator');
 
-controller.getAll= () => {
-    return new Promise((resolve, reject) => {
-        
-        Location.findAndCountAll({
-            attributes: ['id', 'latitude', 'longitude', 'locationName']
-            
-        })
-            .then(data => resolve(data))
-            .catch(error => reject(new Error(error)));
-    });
+const locationController = {
+  getAll: async (req, res) => {
+    try {
+      const locations = await Location.findAll({
+        attributes: ['id', 'latitude', 'longitude', 'locationName']
+      });
+      res.status(200).json(locations);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  createLocation: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { latitude, longitude, locationName, bookingFormId } = req.body;
+
+    try {
+      const newLocation = await Location.create({
+        latitude: latitude,
+        longitude: longitude,
+        locationName: locationName,
+        bookingFormId: bookingFormId // Assuming bookingFormId is optional and may not always be provided
+      });
+
+      res.status(201).json(newLocation);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 };
 
-
-
-
-
-
-module.exports = controller;
+module.exports = locationController;
