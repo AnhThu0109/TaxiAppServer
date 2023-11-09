@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Car.belongsTo(models.Driver, {foreignKey: 'driverId'});
       Car.belongsTo(models.Service, {foreignKey: 'serviceId'});
       Car.hasMany(models.BookingForm, {foreignKey: 'carId'});
+      Car.belongsTo(models.CarType, {foreignKey: 'carType'}); 
     }
   }
   Car.init({

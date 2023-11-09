@@ -27,6 +27,10 @@ app.use('/v1/location', require('./routes/locationRouter'));
 
 app.use('/v1/car', require('./routes/carRouter'));
 
+app.use('/v1/cartypes', require('./routes/cartypeRouter'));
+
+app.use('/v1/services', require('./routes/serviceRouter'));
+
 app.get('/sync', (req, res) => {
     let models = require('./models');
     models.sequelize.sync()
