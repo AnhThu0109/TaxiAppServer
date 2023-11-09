@@ -34,7 +34,42 @@ const locationController = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
+
+  findLocationsByKeyword: async (req, res) => {
+    const { keyword } = req.query;
+
+    try {
+      const locationsStartingWithKeyword = await Location.findAll({
+        where: {
+          locationName: {
+            [models.Sequelize.Op.iLike]: `${keyword}%`
+          }
+        },
+        attributes: ['id', 'latitude', 'longitude', 'locationName']
+      });
+
+      const otherLocations = await Location.findAll({
+        where: {
+          locationName: {
+            [models.Sequelize.Op.iLike]: `%${keyword}%`
+          }
+        },
+        attributes: ['id', 'latitude', 'longitude', 'locationName']
+      });
+
+      // Filter out duplicates from otherLocations
+      const filteredOtherLocations = otherLocations.filter(location => {
+        return !locationsStartingWithKeyword.some(startingLocation => startingLocation.id === location.id);
+      });
+
+      const results = locationsStartingWithKeyword.concat(filteredOtherLocations);
+
+      res.status(200).json(results);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+}
 };
 
 module.exports = locationController;
