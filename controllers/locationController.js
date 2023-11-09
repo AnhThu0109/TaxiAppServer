@@ -63,7 +63,8 @@ const locationController = {
         return !locationsStartingWithKeyword.some(startingLocation => startingLocation.id === location.id);
       });
 
-      const results = locationsStartingWithKeyword.concat(filteredOtherLocations);
+      // Combine and limit results to 5
+      const results = locationsStartingWithKeyword.concat(filteredOtherLocations).slice(0, 5);
 
       res.status(200).json(results);
     } catch (error) {
