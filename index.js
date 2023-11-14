@@ -3,6 +3,9 @@ const app = express();
 const dotenv = require('dotenv').config();
 const cors = require('cors');
 
+// Enable All CORS Requests
+app.use(cors()); 
+
 app.set('port',process.env.PORT || 5000);
 app.listen(app.get('port'), () =>{
     console.log(`Server is running at port ${app.get('port')}`);
@@ -30,6 +33,8 @@ app.use('/v1/car', require('./routes/carRouter'));
 app.use('/v1/cartypes', require('./routes/cartypeRouter'));
 
 app.use('/v1/services', require('./routes/serviceRouter'));
+
+app.use('/v1/distance', require('./routes/distanceRouter'));
 
 app.get('/sync', (req, res) => {
     let models = require('./models');

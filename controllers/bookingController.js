@@ -25,7 +25,7 @@ controller.getAll= () => {
 
 controller.getByAdminId = (id) => {
     return new Promise((resolve, reject) => {
-        let admin;
+        
         BookingForm.findAll({
             where: {adminId: id},
             include: [{ model: models.Customer, attributes: ['id', 'fullname', 'phoneNo'] },
@@ -42,7 +42,7 @@ controller.getByAdminId = (id) => {
 }
 controller.getByBookingId = (id) => {
     return new Promise((resolve, reject) => {
-        let admin;
+        
         BookingForm.findOne({
             where: {id: id},
             include: [{ model: models.Customer, attributes: ['id', 'fullname', 'phoneNo'] },
