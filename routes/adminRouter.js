@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 
 router.post('/register', adminController.register);
 router.post('/login', adminController.login);
+router.get('/:adminId', adminController.getAdminById);
 /*
 router.get('/booking/:id', auth,(req, res, next) => {
     let bookingController = require('../controllers/bookingController');

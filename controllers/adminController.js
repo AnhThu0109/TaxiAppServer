@@ -9,7 +9,7 @@ let Admin = models.Admin;
 const adminController = {
     register: async (req, res) => {
         try {
-            const { username, password, fullname, phoneNo, gender, avatarPath } = req.body;
+            const { username, password, fullname, phoneNo, gender, avatarPath, address, birthday } = req.body;
             console.log(req.body);
             
             if (!username || !password || !fullname) {
@@ -30,7 +30,7 @@ const adminController = {
                 else {
                     const passwordHash = await bcrypt.hash(password, 10);
                    //ghi dữ liệu customer xuống db
-                   console.log(username,passwordHash,fullname,phoneNo,gender,avatarPath);
+                   console.log(username,passwordHash,fullname,phoneNo,gender,avatarPath, address, birthday);
                     /*await Admin.create({
                         username: username,
                         password: passwordHash,
@@ -45,7 +45,9 @@ const adminController = {
                         fullname: fullname,
                         phoneNo: phoneNo,
                         gender: gender,
-                        avatarPath: avatarPath
+                        avatarPath: avatarPath,
+                        address,
+                        birthday
                     })
                     console.log(newAdmin);
                     await newAdmin.save();
@@ -95,6 +97,35 @@ const adminController = {
                 },
                 token: token 
             });
+        }
+    },
+    getAdminById: async (req, res) => {
+        try {
+            const adminId = req.params.adminId;
+
+            // Find admin by ID in the database
+            const admin = await Admin.findByPk(adminId);
+
+            if (!admin) {
+                res.status(404).send('Admin not found');
+                return;
+            }
+
+            const adminData = {
+                id: admin.id,
+                username: admin.username,
+                fullname: admin.fullname,
+                phoneNo: admin.phoneNo,
+                gender: admin.gender,
+                avatarPath: admin.avatarPath,
+                address: admin.address, 
+                birthday: admin.birthday
+            };
+
+            res.status(200).json(adminData);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send({ message: 'Internal Server Error' });
         }
     },
 }
