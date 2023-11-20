@@ -14,7 +14,14 @@ controller.getAll= () => {
     });
 };
 
-
+controller.addCarType = (carTypeData) => {
+    return new Promise((resolve, reject) => {
+        // Assuming carTypeData is an object with the required properties (e.g., { car_type: 'Sedan' })
+        CarType.create(carTypeData)
+            .then(newCarType => resolve(newCarType))
+            .catch(error => reject(new Error(error)));
+    });
+};
 
 
 

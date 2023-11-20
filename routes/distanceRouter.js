@@ -6,20 +6,22 @@ const auth = require('../middleware/auth');
 
 
 //distance.key(process.env.GOOGLE_API_KEY);
-distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
-//distance.key('AIzaSyDJpnqCPt1YUnCFns-VOegxFecDyrdnPRQ')
+// distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
+distance.key('AIzaSyDJpnqCPt1YUnCFns-VOegxFecDyrdnPRQ');
 distance.units('metric');
 distance.language('vn');
 distance.mode('driving');
 
-router.get('/',auth, async (req, res, next) => {
+router.post('/',auth, async (req, res, next) => {
     try {
         const origin = req.body.origin;
         const destination = req.body.destination;
 
         //tính khoảng cách và chi phí
         const distances = await getDistanceMatrix(origin, destination);
+        console.log(distances);
 
+        //&& distances.rows[0].elements[0].status === 'OK'
         if (distances && distances.status === 'OK' && distances.rows[0].elements[0].status === 'OK') {
             const distanceDetails = distances.rows[0].elements[0];
             console.log(distanceDetails);

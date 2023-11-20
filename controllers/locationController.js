@@ -65,7 +65,7 @@ const locationController = {
       });
 
       // Combine and limit results to 5
-      const results = locationsStartingWithKeyword.concat(filteredOtherLocations).slice(0, 5);
+      const results = locationsStartingWithKeyword.concat(filteredOtherLocations).slice(0, 2);
 
       res.status(200).json(results);
     } catch (error) {
