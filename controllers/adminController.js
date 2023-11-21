@@ -128,5 +128,46 @@ const adminController = {
             res.status(500).send({ message: 'Internal Server Error' });
         }
     },
+    updateAdmin: async (req, res) => {
+        try {
+            const adminId = req.params.adminId;
+            const { fullname, phoneNo, gender, avatarPath, address, birthday } = req.body;
+
+            // Find admin by ID in the database
+            const admin = await Admin.findByPk(adminId);
+
+            if (!admin) {
+                res.status(404).send('Admin not found');
+                return;
+            }
+
+            // Update admin information
+            admin.fullname = fullname || admin.fullname;
+            admin.phoneNo = phoneNo || admin.phoneNo;
+            admin.gender = gender || admin.gender;
+            admin.avatarPath = avatarPath || admin.avatarPath;
+            admin.address = address || admin.address;
+            admin.birthday = birthday || admin.birthday;
+
+            // Save the updated admin information to the database
+            await admin.save();
+
+            const updatedAdminData = {
+                id: admin.id,
+                username: admin.username,
+                fullname: admin.fullname,
+                phoneNo: admin.phoneNo,
+                gender: admin.gender,
+                avatarPath: admin.avatarPath,
+                address: admin.address,
+                birthday: admin.birthday
+            };
+
+            res.status(200).json({ message: 'Admin information updated successfully', data: updatedAdminData });
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
 }
 module.exports = adminController

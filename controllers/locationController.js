@@ -31,7 +31,7 @@ const locationController = {
         bookingFormId: bookingFormId // Assuming bookingFormId is optional and may not always be provided
       });
 
-      res.status(201).json(newLocation);
+      res.status(200).json(newLocation);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
