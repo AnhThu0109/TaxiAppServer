@@ -77,5 +77,60 @@ const customerController = {
             });
         }
     },
+
+    findAllCustomers: async (req, res) => {
+        try {
+            const customers = await Customer.findAll();
+            res.status(200).json(customers);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
+
+    findCustomerById: async (req, res) => {
+        const customerId = req.params.id;
+
+        try {
+            const customer = await Customer.findByPk(customerId);
+
+            if (!customer) {
+                res.status(404).send('Customer not found');
+                return;
+            }
+
+            res.status(200).json(customer);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
+
+    findAllCustomersByTelKeyword: async (req, res) => {
+        try {
+            const { keyword } = req.query;
+            let whereCondition = {};
+
+            if (keyword) {
+                // If a keyword is provided, search based on phone number
+                whereCondition = {
+                    phoneNo: {
+                        [models.Sequelize.Op.like]: `%${keyword}%`,
+                    },
+                };
+            }
+
+            const customers = await Customer.findAll({
+                where: whereCondition,
+                limit: 3
+            });
+
+            res.status(200).json(customers);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
+
 }
 module.exports = customerController

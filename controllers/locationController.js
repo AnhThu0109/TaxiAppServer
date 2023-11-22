@@ -31,7 +31,7 @@ const locationController = {
         bookingFormId: bookingFormId // Assuming bookingFormId is optional and may not always be provided
       });
 
-      res.status(201).json(newLocation);
+      res.status(200).json(newLocation);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -65,7 +65,7 @@ const locationController = {
       });
 
       // Combine and limit results to 5
-      const results = locationsStartingWithKeyword.concat(filteredOtherLocations).slice(0, 5);
+      const results = locationsStartingWithKeyword.concat(filteredOtherLocations).slice(0, 2);
 
       res.status(200).json(results);
     } catch (error) {

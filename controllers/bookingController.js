@@ -58,7 +58,4 @@ controller.getByBookingId = (id) => {
     })
 }
 
-
-
-
 module.exports = controller;
