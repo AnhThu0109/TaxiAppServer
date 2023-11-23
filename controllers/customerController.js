@@ -30,7 +30,7 @@ const customerController = {
                 else {
                     const passwordHash = await bcrypt.hash(password, 10);
                    //ghi dữ liệu customer xuống db
-                    await Customer.create({
+                   const newCustomer = await Customer.create({
                         phoneNo: phoneNo,
                         password: passwordHash,
                         fullname: fullname,
@@ -42,7 +42,16 @@ const customerController = {
                     console.log(token)
                     res.send({ 
                         msg: 'Register successful',
-                        token: token })
+                        token: token,
+                        customer: {
+                            id: newCustomer.id,
+                            phoneNo: newCustomer.phoneNo,
+                            fullname: newCustomer.fullname,
+                            gender: newCustomer.gender,
+                            email: newCustomer.email,
+                            avatarPath: newCustomer.avatarPath,
+                          },
+                    })
                 }
             }
         }

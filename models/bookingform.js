@@ -28,10 +28,24 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.INTEGER,
     bookingTime: DataTypes.DATE,
     Trip_Start_Time: DataTypes.TIME,
-    Trip_End_Time: DataTypes.TIME
+    Trip_End_Time: DataTypes.TIME,
+    distance: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'BookingForm',
+    hooks: {
+      // Create a BookingInfo entry after creating a BookingForm
+      afterCreate: async (bookingForm, options) => {
+        // Check if the note attribute is present in the bookingForm data
+        const customNote = bookingForm.note ? bookingForm.note : null;
+
+        // Create BookingInfo entry with the custom note (if present)
+        await sequelize.models.BookingInfo.create({ bookingFormId: bookingForm.id, note: customNote, adminId: bookingForm.adminId, driverId: bookingForm.driverId, customerId: bookingForm.customerId});
+
+        // Create Bill
+        await sequelize.models.Bill.create({ bookingFormId: bookingForm.id, note: customNote, customerId: bookingForm.customerId, sum: bookingForm.sum, paymentType: bookingForm.paymentType, status: bookingForm.status});
+      },
+    },
   });
   return BookingForm;
 };

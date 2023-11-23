@@ -2,6 +2,8 @@ let controller = {};
 const { query } = require('express');
 let models = require('../models');
 let BookingForm = models.BookingForm;
+let Bill = models.Bill;
+let BookingInfo = models.BookingInfo;
 let Sequelize = require('sequelize');
 let Op = Sequelize.Op;
 
@@ -58,4 +60,41 @@ controller.getByBookingId = (id) => {
     })
 }
 
-module.exports = controller;
+controller.createBooking = (bookingData) => {
+    return new Promise(async (resolve, reject) => {
+      const { note, sum, ...bookingFormAttributes } = bookingData;
+  
+      try {
+        // Create the BookingForm without the note and sum attributes
+        const createdBookingForm = await BookingForm.create(bookingFormAttributes);
+  
+        // Create BookingInfo entry with the custom note (if present)
+        if (note) {
+          await BookingInfo.create({
+            bookingFormId: createdBookingForm.id,
+            note,
+            adminId: createdBookingForm.adminId,
+            driverId: createdBookingForm.driverId,
+            customerId: createdBookingForm.customerId,
+          });
+        }
+  
+        // Create Bill entry with the sum (if present)
+        await Bill.create({
+          bookingFormId: createdBookingForm.id,
+          note: note || null,  // Set note to null if it's not provided
+          customerId: createdBookingForm.customerId,
+          sum: sum || null,    // Set sum to null if it's not provided
+          paymentType: createdBookingForm.paymentType,
+          status: createdBookingForm.status,
+        });
+  
+        resolve(createdBookingForm);
+      } catch (error) {
+        reject(new Error(error));
+      }
+    });
+  };
+  
+  module.exports = controller;
+  
