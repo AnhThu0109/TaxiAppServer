@@ -150,6 +150,34 @@ const driverController = {
             console.error('Error find driver:', err.message);
             throw err;
         }
-    }
+    },
+
+    findAllDrivers: async (req, res) => {
+        try {
+            const drivers = await Driver.findAll();
+            res.status(200).json(drivers);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
+
+    findDriverById: async (req, res) => {
+        const driverId = req.params.id;
+
+        try {
+            const driver = await Driver.findByPk(driverId);
+
+            if (!driver) {
+                res.status(404).send('Customer not found');
+                return;
+            }
+
+            res.status(200).json(driver);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
 }
 module.exports = driverController

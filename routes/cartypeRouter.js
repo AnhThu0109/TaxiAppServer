@@ -14,5 +14,16 @@ router.get('/', auth,(req, res, next) => {
 
 });
 
+// Create a new car type
+router.post('/', auth, (req, res, next) => {
+    const newCarTypeData = req.body; // Assuming the new data is sent in the request body
+
+    cartypeController
+        .addCarType(newCarTypeData)
+        .then(newCarType => {
+            res.status(201).send(newCarType); // 201 Created status for successful creation
+        })
+        .catch(error => next(error));
+});
 
 module.exports = router;

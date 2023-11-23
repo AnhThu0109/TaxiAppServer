@@ -58,19 +58,7 @@ controller.getByBookingId = (id) => {
         
     })
 }
-controller.save = (booking, callback) => {
-       
-        const newBooking = BookingForm.build({
-            pickupLocation: booking.pickupLocation,
-            destination: booking.destination,
-            bookingWay: booking.bookingWay,
-            customerId: booking.customerId
-            
-        })
-    newBooking.save()
-        .then(savedBooking => callback(null, savedBooking))
-        .catch(error => callback(error, null));
-};
+
 
 
 

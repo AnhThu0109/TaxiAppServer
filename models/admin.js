@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     phoneNo: DataTypes.STRING,
     gender: DataTypes.STRING,
     avatarPath: DataTypes.STRING,
+    address: DataTypes.STRING,
+    birthday: DataTypes.DATEONLY
   }, {
     sequelize,
     modelName: 'Admin',
