@@ -2,6 +2,7 @@ let controller = {};
 const { query } = require('express');
 let models = require('../models');
 let BookingForm = models.BookingForm;
+
 let Sequelize = require('sequelize');
 let Op = Sequelize.Op;
 
@@ -57,7 +58,19 @@ controller.getByBookingId = (id) => {
         
     })
 }
-
+controller.save = (booking, callback) => {
+       
+        const newBooking = BookingForm.build({
+            pickupLocation: booking.pickupLocation,
+            destination: booking.destination,
+            bookingWay: booking.bookingWay,
+            customerId: booking.customerId
+            
+        })
+    newBooking.save()
+        .then(savedBooking => callback(null, savedBooking))
+        .catch(error => callback(error, null));
+};
 
 
 

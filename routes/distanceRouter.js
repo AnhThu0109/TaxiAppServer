@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 
 
 //distance.key(process.env.GOOGLE_API_KEY);
-distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
+//distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
 //distance.key('AIzaSyDJpnqCPt1YUnCFns-VOegxFecDyrdnPRQ')
 distance.units('metric');
 distance.language('vn');

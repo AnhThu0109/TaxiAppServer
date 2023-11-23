@@ -1,7 +1,7 @@
 //const Customer = require('../models/customer');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+let Sequelize = require('sequelize');
 let models = require('../models');
 let Driver = models.Driver;
 
@@ -107,5 +107,49 @@ const driverController = {
             });
         }
     },
+    update: async (driver, socket) => {
+        //const { id, socketId } = req.body;
+        console.log(driver.status)
+        try {
+            const driverUpdate = await Driver.update({
+                socketId: socket.id,
+                status: driver.status,
+                location: driver.location
+            }, {
+                where: {
+                    id: driver.id,
+                },
+            })
+            if (!driverUpdate) {
+                throw new Error('Update failed');
+            }
+            socket.emit('updateSuccess', { msg: 'Update successful' });
+        } catch (err) {
+            console.error('Error updating driver:', err.message);
+            socket.emit('updateError', { msg: 'Update failed', error: err.message });
+        }
+    },
+    nearbyDriver: async (longitude, latitude) => {
+        try {
+          const drivers = await Driver.findAll({
+                attributes: ['id', 'socketId', 'location'],
+                where: Sequelize.where(
+                    Sequelize.fn(
+                        'ST_DWithin',
+                        Sequelize.col('location'),
+                        Sequelize.fn('ST_SetSRID',Sequelize.fn('ST_MakePoint', parseFloat(longitude), parseFloat(latitude)),4326),
+                        10000
+                    ),
+                    true
+                ),
+            
+            })
+            //console.log(drivers);
+            return drivers
+        } catch (err){
+            console.error('Error find driver:', err.message);
+            throw err;
+        }
+    }
 }
 module.exports = driverController
