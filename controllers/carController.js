@@ -23,4 +23,16 @@ controller.createCar = (carData) => {
   });
 };
 
+controller.findCarByDriverId = async (driverId) => {
+  try {
+    const car = await Car.findOne({
+      where: { driverId },
+    });
+
+    return car;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = controller;
