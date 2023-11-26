@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 let Sequelize = require('sequelize');
+let Op = require('sequelize');
 let models = require('../models');
 let Driver = models.Driver;
 
@@ -129,7 +130,7 @@ const driverController = {
             socket.emit('updateError', { msg: 'Update failed', error: err.message });
         }
     },
-    nearbyDriver: async (longitude, latitude) => {
+    /*nearbyDriver: async (longitude, latitude) => {
         try {
           const drivers = await Driver.findAll({
                 attributes: ['id', 'socketId', 'location'],
@@ -150,6 +151,37 @@ const driverController = {
             console.error('Error find driver:', err.message);
             throw err;
         }
+    },*/
+    NearByDrivers: async (targetLongitude, targetLatitude) => {
+        try {
+            const maxDistance = 1000;
+            const targetPoint = Sequelize.fn(
+                'ST_SetSRID',
+                Sequelize.fn('ST_MakePoint', targetLongitude, targetLatitude),
+                4326
+              );
+            
+              const drivers = await Driver.findAll({
+                attributes: [
+                  'id', 'status', 'socketId', 'location',
+                  [
+                    Sequelize.literal(
+                      `ST_Distance("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})')) / 1000`
+                    ),
+                    'distance_in_km',
+                  ],
+                ],
+                where: Sequelize.literal(
+                  `ST_DWithin("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})'), ${maxDistance * 1000}) = true AND status = 'available'`
+                ),
+                order: [[Sequelize.literal(`ST_Distance("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})'))`), 'ASC']],
+              });
+            
+              return drivers;
+        } catch (err) {
+            console.error('Error find driver:', err.message);
+            throw err;
+        }
     },
 
     findAllDrivers: async (req, res) => {
@@ -162,21 +194,18 @@ const driverController = {
         }
     },
 
-    findDriverById: async (req, res) => {
-        const driverId = req.params.id;
+    findDriverById: async (driverId) => {
+        //const driverId = req.params.id;
 
         try {
-            const driver = await Driver.findByPk(driverId);
+            const driver = await Driver.findByPk(driverId, {
+                attributes: ['id', 'phoneNo', 'fullname', 'licensePlate', 'location'],
+            });
 
-            if (!driver) {
-                res.status(404).send('Customer not found');
-                return;
-            }
-
-            res.status(200).json(driver);
+            return driver;
         } catch (error) {
-            console.error(error.message);
-            res.status(500).send({ message: 'Internal Server Error' });
+            console.error('Error find driver:', err.message);
+            throw err;
         }
     },
 }

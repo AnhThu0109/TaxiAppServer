@@ -40,85 +40,55 @@ router.get('/:id', auth,(req, res, next) => {
 });
 router.post('/bookRide', async (req, res, next) => {
     let booking = req.body.data;
+    const [pick_longitude, pick_latitude] = req.body.data.pickupLocation;
+    const [des_longitude, des_latitude] = req.body.data.destination;
+    booking.pickupLocation = {
+        type: 'Point',
+        coordinates: [pick_longitude, pick_latitude],
+      };
+    booking.destination = {
+        type: 'Point',
+        coordinates: [des_longitude, des_latitude],
+      };
     const io = req.app.io;
-    //console.log(io)
+
     try {
-    //const nearbyDrivers =  await driverController.nearbyDriver(booking.longitude,booking.latitude);
-     //await sendRequestToDrivers(booking.longitude,booking.latitude)
-     const drivers = await driverController.nearbyDriver(booking.longitude,booking.latitude);
-     const longitude = booking.longitude;
-     const latitude = booking.latitude;
-     /*drivers.forEach(driver => {
-        io.to(driver.socketId).emit('rideRequest', {
-            requestId: 'uniqueRequestId', // generate a unique request ID
-            location: {longitude, latitude },
-        });
-    });*/
-    for (const driver of drivers) {
-        try {
-            io.on('driver_acc',  async (response) => {
-                console.log('Driver:', io.id);
-                // handle booking
-               
-                console.log(response);
-              });
-            const response = await sendRequestToDrivers(driver,booking, io);
-            console.log(response);
-            // Nếu tài xế chấp nhận, trả về kết quả và thông tin tài xế
-            /*
-            io.to(driver.socketId).emit('rideRequest', {
-                requestId: 'uniqueRequestId',
-                location: { longitude, latitude },
-              });
-          
-              // Lắng nghe phản hồi từ tài xế
-              console.log("Đang chờ phản hồi từ tài xế" + driver.id)
-              //handleDriverConnection(io);
-          
-              io.on('driver_accepted', (response) => {
-                console.log('Driver accepted:', io.id);
-                // handle booking
-                console.log(response);
-                if (response.accepted) {
+        //lưu booking xuống database
+        const savedBooking = await bookingController.save(booking);
+        console.log('Pickup Location:', savedBooking.pickupLocation);
+        console.log('Pickup log lati:', booking.pickupLocation);
+        //Tìm tài xế gần vị trí khách hàng
+        const drivers = await driverController.NearByDrivers(pick_longitude, pick_latitude);
+        //gửi lần lượt booking tới từng tài xế
+        for (const driver of drivers) {
+            try {
+                const driverId = await sendRequestToDrivers(driver, booking, io);
+
+                if (driverId) {
+                    console.log("id tài xế nhận cuốc xe: " + driverId);
+                    const updateBooking = {
+                        id: savedBooking.id,
+                        status: 3, //tài xế đã nhận cuốc xe
+                        driverId: driverId
+                    }
+                    await bookingController.updateDriverAccepted(updateBooking);
+                    const driver_accepted = await driverController.findDriverById(driverId);
                     
-                    res.status(200).json({
-                        message: 'Ride request accepted',
-                        driverId: driver.id,
-                        
-                    });
+                    return res.status(201).send(driver_accepted);
+
                 }
-                
-              });*/
-            
-        } catch (error) {
-            console.error(`Error sending request to Driver ${driver.id}:`, error.message);
-            // Nếu có lỗi, tiếp tục với tài xế tiếp theo
+
+            } catch (error) {
+                console.error(`Error sending request to Driver ${driver.id}:`, error.message);
+                // Nếu có lỗi, tiếp tục với tài xế tiếp theo
+            }
         }
-    }
-
-    } catch (err){
-        console.error('Error sending ride request:', err.message);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-    
-  
-
-})
-/*
-const sendRequestToDrivers = async (longitude, latitude) => {
-    try {
-        const drivers = await driverController.nearbyDriver(longitude, latitude);
-
-        // Send request to each driver
-        drivers.forEach(driver => {
-            io.to(driver.socketId).emit('rideRequest', {
-                requestId: 'uniqueRequestId', // generate a unique request ID
-                location: { longitude, latitude },
-            });
-        });
-
+        res.status(404).send({ message: 'Không tìm thấy tài xế!' });
     } catch (err) {
         console.error('Error sending ride request:', err.message);
-    }
-};*/
+        res.status(500).json({ error: 'Internal Server Error' });
+    }    
+
+})
+
 module.exports = router;

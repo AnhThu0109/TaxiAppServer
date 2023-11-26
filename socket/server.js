@@ -5,6 +5,7 @@ let Driver = models.Drivers;
 
 const driverLocationController = require('../controllers/driverLocationController');
 const driverController = require('../controllers/driverController');
+const bookingController = require('../controllers/bookingController');
 
 distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
 distance.units('metric');
@@ -12,6 +13,8 @@ distance.language('vn');
 distance.mode('driving');
 
 let drivers = [];
+let drivers_rejected = [];
+let drivers_accepted = [];
 
 const handleDriverConnection = (socket) => {
   console.log('Driver online:', socket.id);
@@ -26,11 +29,10 @@ const handleDriverConnection = (socket) => {
         } catch (err){
            console.error('Error updating user:', err.message);
             //socket.emit('Error',{ message: err.message })
-        }
-        
+        }        
 
     })
-
+/*
   socket.on('driver_location', (location) => {
     console.log('Driver location:', location);
     const driver = {
@@ -46,23 +48,30 @@ const handleDriverConnection = (socket) => {
     } else {
         drivers.push(driver);
     }
-  });
+  });*/
 
   socket.on('driver_rejected', () => {
     console.log('Driver rejected:', socket.id);
     // handle next driver
   });
 
-  socket.on('driver_accepted', () => {
+  socket.on('driver_accepted:'+ socket.id, (booking) => {
     console.log('Driver accepted:', socket.id);
+    //console.log('booking:' + booking.status);
+    console.log('driverId:' + booking.driverId);
     // handle booking
-
-    drivers = drivers.map((driver) => {
-      if (driver.id === socket.id) {
-        return { ...driver, available: false };
-      }
-      return driver;
-    });
+    const driverId = booking.driverId;
+    //const socketId = socket.id;
+    drivers_accepted.push(driverId);
+  });
+  socket.on('driver_arrived:'+ socket.id, (booking) => {
+    console.log('Driver accepted:', socket.id);
+    //console.log('booking:' + booking.status);
+    console.log('driverId:' + booking.driverId);
+    // handle booking
+    const driverId = booking.driverId;
+    //const socketId = socket.id;
+   
   });
 
   socket.on('driver_completed', () => {
@@ -83,97 +92,39 @@ const handleDriverConnection = (socket) => {
   });
 }
 
-const sendBookingToDriver = async (customerLocation) => {
-  const nearestDriver = await findNearestDriver(customerLocation);
-  if (nearestDriver) {
-    nearestDriver.socket.emit('driver_new_booking', { driver: nearestDriver });
-    return;
-  }
-
-  console.log('Can not find driver near customer');
-}
-
-// TODO: test send, should be move to api /book
-// setTimeout(() => {
-//   sendBookingToDriver([37.7749, -122.4194]);
-// }, 3000);
-
-async function findNearestDriver(customerLocation) {
-  let nearestDriver = null;
-  let minDistance = Infinity;
-
-  for (const driver of drivers) {
-    if (!driver.available) {
-      continue;
-    }
-    const distances = await new Promise((resolve, reject) => {
-      distance.matrix([customerLocation], [driver.location], (err, distances) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(distances);
-        }
-      });
-    });
-
-    if (distances && distances.status === 'OK' && distances.rows[0].elements[0].status === 'OK') {
-      const distance = distances.rows[0].elements[0].distance.value;
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestDriver = driver;
-      }
-    }
-  }
-
-  return nearestDriver;
-}
-
-const sendRequestToDrivers = async (driver,booking, io) => {
-  return new Promise((resolve, reject) => {
+async function sendRequestToDrivers(driver,booking, io) {
+  try {
     const longitude = booking.longitude;
     const latitude = booking.latitude;
     io.to(driver.socketId).emit('rideRequest', {
       requestId: 'uniqueRequestId',
       location: { longitude, latitude },
+      totalfare: booking.sum
     });
 
     // Lắng nghe phản hồi từ tài xế
-    console.log("Đang chờ phản hồi từ tài xế" + driver.id)
-    //handleDriverConnection(io);
-
-    io.on('driver_accepted',  async (response) => {
-      console.log('Driver:', io.id);
-      // handle booking
-      clearTimeout(timeoutId);
-      console.log(response);
-      resolve(response)
-      
-    });
-    /*
-    io.to(driver.socketId).on('rideResponse', (response) =>{
-      console.log("socket id: "+io.id)
-      resolve(response);
-    });
-    /*
-    io.on('rideResponse', (response) => {
-      console.log("socket id: "+io.id)
-      resolve(response);
-    });
-    const driverSocket = io.to(driver.socketId)
-    io.once('rideResponse', (response) => {
-      resolve(response);
-    });*/
-
-
+    console.log("Đang chờ phản hồi từ tài xế: " + driver.id)
+    await sleep(30000);
     // Xử lý timeout nếu tài xế không phản hồi sau một khoảng thời gian nhất định
-    const timeoutId = setTimeout(() => {
-      reject(new Error('Timeout: No response from driver'));
-    }, 20000); // Timeout sau 10 giây
-  });
+    if (drivers_accepted.includes(driver.id)) {
+      // Process the case where the driver did not reject the request
+      console.log("Driver " + driver.id + " accepted the request");
+      return driver.id;
+  } else {
+      // Process the case where the driver rejected the request
+      console.log("Driver " + driver.id + " rejected the request");
+      return null;
+  }
+  } catch (err){
+    console.error(`Error sending request to Driver ${driver.id}:`, err.message);
+        throw err;
+  }
+}
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {
-  sendBookingToDriver,
   handleDriverConnection,
   sendRequestToDrivers
 };

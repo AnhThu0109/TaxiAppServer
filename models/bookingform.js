@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   BookingForm.init({
-    pickupLocation: DataTypes.STRING,
-    destination: DataTypes.STRING,
+    pickupLocation: DataTypes.GEOMETRY('POINT'),
+    destination: DataTypes.GEOMETRY('POINT'),
     bookingWay: DataTypes.INTEGER,
     status: DataTypes.INTEGER,
     bookingTime: DataTypes.DATE,
