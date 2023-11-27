@@ -23,7 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     gender: DataTypes.STRING,
     avatarPath: DataTypes.STRING,
-    licensePlate: DataTypes.STRING
+    licensePlate: DataTypes.STRING,
+    status: DataTypes.STRING,
+    socketId: DataTypes.STRING,
+    location: DataTypes.GEOMETRY('POINT')
+
   }, {
     sequelize,
     modelName: 'Driver',
