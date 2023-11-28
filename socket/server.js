@@ -94,8 +94,9 @@ const handleDriverConnection = (socket) => {
 
 async function sendRequestToDrivers(driver,booking, io) {
   try {
-    const longitude = booking.longitude;
-    const latitude = booking.latitude;
+    console.log(booking);
+    const longitude = booking.pickupLocation.coordinates[0];
+    const latitude = booking.pickupLocation.coordinates[1];
     io.to(driver.socketId).emit('rideRequest', {
       requestId: 'uniqueRequestId',
       location: { longitude, latitude },

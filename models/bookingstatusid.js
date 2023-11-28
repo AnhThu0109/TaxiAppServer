@@ -17,7 +17,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   BookingStatusId.init({
     status_description: DataTypes.STRING
-    
+    //1: On Progress (đang xử lý)
+    //2: No drivers accepted the request
+    //3: Running (đã có tài xế nhận cuốc)
+    //4: Completed
+    //5: Canceled
   }, {
     sequelize,
     modelName: 'BookingStatusId',

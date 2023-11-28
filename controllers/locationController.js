@@ -98,6 +98,25 @@ const locationController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  getLocationById: async (locationId) => {
+    try {
+      const location = await Location.findOne({
+        where: {
+          id: locationId,
+        },
+        attributes: ["id", "latitude", "longitude", "locationName"],
+      });
+
+      if (!location) {
+        return null; // Return null if the location is not found
+      }
+
+      return location;
+    } catch (error) {
+      throw new Error(`Error fetching location details: ${error.message}`);
+    }
+  },
 };
 
 module.exports = locationController;

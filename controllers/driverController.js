@@ -176,7 +176,7 @@ const driverController = {
                 ),
                 order: [[Sequelize.literal(`ST_Distance("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})'))`), 'ASC']],
               });
-            
+              console.log("near drivers", drivers);
               return drivers;
         } catch (err) {
             console.error('Error find driver:', err.message);
