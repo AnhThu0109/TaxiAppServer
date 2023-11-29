@@ -36,40 +36,11 @@ router.get("/driver/:id", auth, (req, res, next) => {
     .catch((error) => next(error));
 });
 
- /*   try {
-        //lưu booking xuống database
-        
-        //Tìm tài xế gần vị trí khách hàng
-        const drivers = await driverController.NearByDrivers(pick_longitude, pick_latitude,booking.carType, booking.serviceId);
-        booking.id = savedBooking.id;
-        //gửi lần lượt booking tới từng tài xế
-        for (const driver of drivers) {
-            try {
-                const driverId = await sendRequestToDrivers(driver, booking, io);
-
-                if (driverId) {
-                    console.log("id tài xế nhận cuốc xe: " + driverId);
-                    const updateBooking = {
-                        id: savedBooking.id,
-                        status: 3, //tài xế đã nhận cuốc xe
-                        driverId: driverId
-                    }
-                    await bookingController.updateDriverAccepted(updateBooking);
-                    const driver_accepted = await driverController.findDriverById(driverId);
-                    io.to(booking.socketId).emit('bookingAccept', {
-                        
-                        driverInfo: driver_accepted
-                         
-                      });
-                  
-                    
-                    return res.status(201).send(driver_accepted);*/
-
-
+ 
 router.post("/bookRide", async (req, res, next) => {
     let booking = req.body.data;
     const pickupLocationId = req.body.data.pickupLocationId;
-
+    console.log(pickupLocationId);
     const pickupLocationDetails = await locationController.getLocationById(
         pickupLocationId
     );
@@ -98,7 +69,7 @@ router.post("/bookRide", async (req, res, next) => {
             booking.carType,
             booking.serviceId
         );
-        let driverAccepted = false;
+        
         //gửi lần lượt booking tới từng tài xế
       for (const driver of drivers) {
         try {
@@ -115,6 +86,7 @@ router.post("/bookRide", async (req, res, next) => {
             const driver_accepted = await driverController.findDriverById(
               driverId
             );
+            //gửi thông tin tài xế cho admin qua socket.io
             io.to(booking.socketId).emit('bookingAccept', {
 
               driverInfo: driver_accepted
@@ -209,10 +181,8 @@ router.post("/rebook/:id", async (req, res, next) => {
       status: 2, // No driver accepted
     };
     await bookingController.updateBookingStatus(updateBooking);
-
-    if (!driverAccepted) {
-      res.status(404).send({ message: "Không tìm thấy tài xế!" });
-    }
+    res.status(404).send({ message: "Không tìm thấy tài xế!" });
+   
   } catch (err) {
     console.error("Error sending ride request:", err.message);
     res.status(500).json({ error: "Internal Server Error" });

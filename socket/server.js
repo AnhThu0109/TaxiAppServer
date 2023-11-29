@@ -57,14 +57,14 @@ const handleDriverConnection = (socket) => {
    
   });
 
-  socket.on('driver_completed'+ socket.id, (booking) => {
+  socket.on('driver_completed:'+ socket.id, (booking) => {
     console.log('Driver completed:', socket.id);
     // handle booking
     bookingController.updateDriverAccepted(booking);
     
   });
 
-  socket.on('disconnect'+socket.id, async (driver) => {
+  socket.on('disconnect:'+socket.id, async (driver) => {
     console.log('Driver disconnected:', socket.id);
     driver.status = 'Disconnect';
     try {

@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "postgres",
-    "password": "new_password",
-    "database": "taxiapp",
+    "password": "123456",
+    "database": "taxiappdb",
     "host": "localhost",
     "dialect": "postgres"
   },
