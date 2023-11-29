@@ -58,7 +58,8 @@ router.post('/bookRide', async (req, res, next) => {
         console.log('Pickup Location:', savedBooking.pickupLocation);
         console.log('Pickup log lati:', booking.pickupLocation);
         //Tìm tài xế gần vị trí khách hàng
-        const drivers = await driverController.NearByDrivers(pick_longitude, pick_latitude);
+        const drivers = await driverController.NearByDrivers(pick_longitude, pick_latitude,booking.carType, booking.serviceId);
+        booking.id = savedBooking.id;
         //gửi lần lượt booking tới từng tài xế
         for (const driver of drivers) {
             try {
@@ -73,6 +74,12 @@ router.post('/bookRide', async (req, res, next) => {
                     }
                     await bookingController.updateDriverAccepted(updateBooking);
                     const driver_accepted = await driverController.findDriverById(driverId);
+                    io.to(booking.socketId).emit('bookingAccept', {
+                        
+                        driverInfo: driver_accepted
+                         
+                      });
+                  
                     
                     return res.status(201).send(driver_accepted);
 
@@ -83,7 +90,10 @@ router.post('/bookRide', async (req, res, next) => {
                 // Nếu có lỗi, tiếp tục với tài xế tiếp theo
             }
         }
-        res.status(404).send({ message: 'Không tìm thấy tài xế!' });
+        res.status(404).send({ 
+            message: 'Không tìm thấy tài xế!',
+            data: savedBooking
+         });
     } catch (err) {
         console.error('Error sending ride request:', err.message);
         res.status(500).json({ error: 'Internal Server Error' });

@@ -1,76 +1,65 @@
 let controller = {};
 const { query } = require('express');
 let models = require('../models');
-let Car = models.Car;
+let BookingStatus = models.BookingStatusId;
 let Sequelize = require('sequelize');
 let Op = Sequelize.Op;
 
 controller.getAll= () => {
     return new Promise((resolve, reject) => {
         
-        Car.findAndCountAll({
-            attributes: ['id', 'licensePlate', 'carName', 'carType','serviceId' ] 
-            
-        })
+        BookingStatus.findAll({attributes: ['id', 'status_description']})
             .then(data => resolve(data))
             .catch(error => reject(new Error(error)));
     });
 };
-controller.addCar = (newCar) => {
+
+controller.addStatus = (status) => {
     return new Promise((resolve, reject) => {
         // Assuming carTypeData is an object with the required properties (e.g., { car_type: 'Sedan' })
-        Car.create(newCar)
-            .then(newCar => resolve(newCar))
+        BookingStatus.create(status)
+            .then(newStatus => resolve(newStatus))
             .catch(error => reject(new Error(error)));
     });
 };
 
-controller.updateCar = (newCar) => {
-    const driverId = newCar.driverId;
-    //const updatestatus_description = status.status_description;
+controller.updateStatus = (status) => {
+    const statusId = status.id;
+    const updatestatus_description = status.status_description;
     
     return new Promise((resolve, reject) => {
         // Assuming carTypeData is an object with the required properties (e.g., { car_type: 'Sedan' })
-        Car.findOne({ where: { driverId : driverId}})
+        BookingStatus.findByPk(statusId)
         .then(data => {
             if (!data) {
-                reject(new Error('Car not found.'));
+                reject(new Error('Booking status not found.'));
             } else {
                 // Nếu statusId tồn tại, thực hiện cập nhật
-                data.update(newCar)
-                    .then(update => resolve(update))
+                data.update(status)
+                    .then(updatedStatus => resolve(updatedStatus))
                     .catch(error => reject(new Error(error)));
             }
         })
         .catch(error => reject(new Error(error)));
     })
 }
-controller.getByDriverId= (id) => {
-    return new Promise((resolve, reject) => {
-        
-        Car.findOne({ where: { driverId : id}})
-            .then(data => resolve(data))
-            .catch(error => reject(new Error(error)));
-    });
-};
 
-controller.deleteCar = (driverId) => {
+controller.deleteStatus = (statusId) => {
     return new Promise((resolve, reject) => {
         // Kiểm tra xem statusId có tồn tại không
-        Car.findOne({ where: { driverId : driverId}})
-            .then(car => {
-                if (!car) {
-                    reject(new Error('Car not found.'));
+        BookingStatus.findByPk(statusId)
+            .then(status => {
+                if (!status) {
+                    reject(new Error('Booking status not found.'));
                 } else {
                     // Nếu statusId tồn tại, thực hiện xoá
-                    car.destroy()
-                        .then(() => resolve('Car deleted successfully.'))
+                    status.destroy()
+                        .then(() => resolve('Booking status deleted successfully.'))
                         .catch(error => reject(new Error(error)));
                 }
             })
             .catch(error => reject(new Error(error)));
     });
 };
-
 
 module.exports = controller;

@@ -13,7 +13,7 @@ distance.language('vn');
 distance.mode('driving');
 
 let drivers = [];
-let drivers_rejected = [];
+
 let drivers_accepted = [];
 
 const handleDriverConnection = (socket) => {
@@ -32,29 +32,13 @@ const handleDriverConnection = (socket) => {
         }        
 
     })
-/*
-  socket.on('driver_location', (location) => {
-    console.log('Driver location:', location);
-    const driver = {
-        id: socket.id,
-        socket: socket,
-        location: location,
-        available: true
-    };
-    
-    const index = drivers.findIndex((d) => d.id === driver.id);
-    if (index >= 0) {
-        drivers[index] = driver;
-    } else {
-        drivers.push(driver);
-    }
-  });*/
+
 
   socket.on('driver_rejected', () => {
     console.log('Driver rejected:', socket.id);
     // handle next driver
   });
-
+  //tài xế nhận cuốc xe
   socket.on('driver_accepted:'+ socket.id, (booking) => {
     console.log('Driver accepted:', socket.id);
     //console.log('booking:' + booking.status);
@@ -65,30 +49,33 @@ const handleDriverConnection = (socket) => {
     drivers_accepted.push(driverId);
   });
   socket.on('driver_arrived:'+ socket.id, (booking) => {
-    console.log('Driver accepted:', socket.id);
+    console.log('Driver arrived:', socket.id);
     //console.log('booking:' + booking.status);
     console.log('driverId:' + booking.driverId);
     // handle booking
-    const driverId = booking.driverId;
-    //const socketId = socket.id;
+    bookingController.updateDriverAccepted(booking);
    
   });
 
-  socket.on('driver_completed', () => {
+  socket.on('driver_completed'+ socket.id, (booking) => {
     console.log('Driver completed:', socket.id);
     // handle booking
-
-    drivers = drivers.map((driver) => {
-      if (driver.id === socket.id) {
-        return { ...driver, available: true };
-      }
-      return driver;
-    });
+    bookingController.updateDriverAccepted(booking);
+    
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect'+socket.id, async (driver) => {
     console.log('Driver disconnected:', socket.id);
-    drivers = drivers.filter((driver) => driver.id !== socket.id);
+    driver.status = 'Disconnect';
+    try {
+      await driverController.update(driver,socket)
+     
+   } catch (err){
+      console.error('Error updating user:', err.message);
+       //socket.emit('Error',{ message: err.message })
+   }        
+
+    
   });
 }
 
@@ -99,7 +86,7 @@ async function sendRequestToDrivers(driver,booking, io) {
     io.to(driver.socketId).emit('rideRequest', {
       requestId: 'uniqueRequestId',
       location: { longitude, latitude },
-      totalfare: booking.sum
+      bookingInfo: booking
     });
 
     // Lắng nghe phản hồi từ tài xế

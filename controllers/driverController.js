@@ -130,29 +130,7 @@ const driverController = {
             socket.emit('updateError', { msg: 'Update failed', error: err.message });
         }
     },
-    /*nearbyDriver: async (longitude, latitude) => {
-        try {
-          const drivers = await Driver.findAll({
-                attributes: ['id', 'socketId', 'location'],
-                where: Sequelize.where(
-                    Sequelize.fn(
-                        'ST_DWithin',
-                        Sequelize.col('location'),
-                        Sequelize.fn('ST_SetSRID',Sequelize.fn('ST_MakePoint', parseFloat(longitude), parseFloat(latitude)),4326),
-                        10000
-                    ),
-                    true
-                ),
-            
-            })
-            //console.log(drivers);
-            return drivers
-        } catch (err){
-            console.error('Error find driver:', err.message);
-            throw err;
-        }
-    },*/
-    NearByDrivers: async (targetLongitude, targetLatitude) => {
+    NearByDrivers: async (targetLongitude, targetLatitude, carType, serviceId) => {
         try {
             const maxDistance = 1000;
             const targetPoint = Sequelize.fn(
@@ -174,6 +152,7 @@ const driverController = {
                 where: Sequelize.literal(
                   `ST_DWithin("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})'), ${maxDistance * 1000}) = true AND status = 'available'`
                 ),
+                include: [{model: models.Car, where: {carType: carType, serviceId: serviceId}}],
                 order: [[Sequelize.literal(`ST_Distance("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})'))`), 'ASC']],
               });
             

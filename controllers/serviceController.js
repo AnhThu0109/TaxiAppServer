@@ -14,7 +14,14 @@ controller.getAll= () => {
     });
 };
 
-
+controller.addService = (service) => {
+    return new Promise((resolve, reject) => {
+        // Assuming carTypeData is an object with the required properties (e.g., { car_type: 'Sedan' })
+        Service.create(service)
+            .then(newService => resolve(newService))
+            .catch(error => reject(new Error(error)));
+    });
+};
 
 
 

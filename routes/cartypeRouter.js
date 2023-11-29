@@ -8,7 +8,7 @@ router.get('/', auth,(req, res, next) => {
     cartypeController
         .getAll()
         .then(data => {
-            res.send(data);
+            res.status(200).send(data);
         })
         .catch(error => next(error));
 

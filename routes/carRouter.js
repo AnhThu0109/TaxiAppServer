@@ -8,11 +8,50 @@ router.get('/', auth,(req, res, next) => {
     carController
         .getAll()
         .then(data => {
-            res.send(data);
+            res.status(200).send(data); 
         })
         .catch(error => next(error));
 
 });
+router.get('/driverid/:id', auth,(req, res, next) => {
+    
+    carController
+        .getByDriverId(req.params.id)
+        .then(data => {
+            res.status(200).send(data);
+        })
+        .catch(error => next(error));
 
+});
+router.post('/', auth,(req, res, next) => {
+    
+    carController
+        .addCar(req.body)
+        .then(data => {
+            res.status(201).send(data);
+        })
+        .catch(error => next(error));
+
+});
+router.put('/', auth,(req, res, next) => {
+    
+    carController
+        .updateCar(req.body)
+        .then(data => {
+            res.status(201).send(data);
+        })
+        .catch(error => next(error));
+
+});
+router.delete('/:driverId', auth,(req, res, next) => {
+    
+    carController
+        .deleteCar(req.params.driverId)
+        .then(data => {
+            res.status(201).send(data);
+        })
+        .catch(error => next(error));
+
+});
 
 module.exports = router;
