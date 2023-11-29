@@ -40,5 +40,41 @@ controller.findBookingStatusById = async (statusId) => {
     throw error;
   }
 };
-
+controller.updateStatus = (status) => {
+  const statusId = status.id;
+  const updatestatus_description = status.status_description;
+  
+  return new Promise((resolve, reject) => {
+      // Assuming carTypeData is an object with the required properties (e.g., { car_type: 'Sedan' })
+      BookingStatus.findByPk(statusId)
+      .then(data => {
+          if (!data) {
+              reject(new Error('Booking status not found.'));
+          } else {
+              // Nếu statusId tồn tại, thực hiện cập nhật
+              data.update(status)
+                  .then(updatedStatus => resolve(updatedStatus))
+                  .catch(error => reject(new Error(error)));
+          }
+      })
+      .catch(error => reject(new Error(error)));
+  })
+}
+controller.deleteStatus = (statusId) => {
+  return new Promise((resolve, reject) => {
+      // Kiểm tra xem statusId có tồn tại không
+      BookingStatus.findByPk(statusId)
+          .then(status => {
+              if (!status) {
+                  reject(new Error('Booking status not found.'));
+              } else {
+                  // Nếu statusId tồn tại, thực hiện xoá
+                  status.destroy()
+                      .then(() => resolve('Booking status deleted successfully.'))
+                      .catch(error => reject(new Error(error)));
+              }
+          })
+          .catch(error => reject(new Error(error)));
+  });
+};
 module.exports = controller;
