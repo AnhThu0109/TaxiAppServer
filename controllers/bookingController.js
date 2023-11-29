@@ -114,6 +114,41 @@ controller.getByDriverId = (id) => {
   });
 };
 
+controller.getByCustomerId = (id) => {
+  return new Promise((resolve, reject) => {
+    BookingForm.findAll({
+      where: { customerId: id },
+      include: [
+        { model: models.Customer, attributes: ["id", "fullname", "phoneNo"] },
+        {
+          model: models.BookingStatusId,
+          attributes: ["id", "status_description"],
+        },
+        { model: models.Bill, attributes: ["id", "sum", "status"] },
+        {
+          model: models.Car,
+          attributes: ["id", "carName", "carType"],
+          include: [
+            { model: models.Service, attributes: ["id", "serviceName"] },
+          ],
+        },
+        {
+          model: models.Location, // Include the Location model
+          as: "pickupLocation", // Assuming there's an alias, adjust accordingly
+          attributes: ["id", "latitude", "longitude", "locationName"],
+        },
+        {
+          model: models.Location, // Include the Location model
+          as: "destination", // Assuming there's an alias, adjust accordingly
+          attributes: ["id", "latitude", "longitude", "locationName"],
+        },
+      ],
+    })
+      .then((data) => resolve(data))
+      .catch((error) => reject(new Error(error)));
+  });
+};
+
 controller.getByBookingId = (id) => {
   return new Promise((resolve, reject) => {
     BookingForm.findOne({

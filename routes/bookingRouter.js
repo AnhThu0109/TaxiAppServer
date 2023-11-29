@@ -17,6 +17,7 @@ router.get("/", auth, (req, res, next) => {
     })
     .catch((error) => next(error));
 });
+
 router.get("/admin/:id", auth, (req, res, next) => {
   bookingController
     .getByAdminId(req.params.id)
@@ -25,6 +26,7 @@ router.get("/admin/:id", auth, (req, res, next) => {
     })
     .catch((error) => next(error));
 });
+
 router.get("/driver/:id", auth, (req, res, next) => {
   bookingController
     .getByDriverId(req.params.id)
@@ -33,6 +35,16 @@ router.get("/driver/:id", auth, (req, res, next) => {
     })
     .catch((error) => next(error));
 });
+
+router.get("/customer/:id", auth, (req, res, next) => {
+  bookingController
+    .getByCustomerId(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((error) => next(error));
+});
+
 router.get("/:id", auth, (req, res, next) => {
   bookingController
     .getByBookingId(req.params.id)
@@ -41,6 +53,7 @@ router.get("/:id", auth, (req, res, next) => {
     })
     .catch((error) => next(error));
 });
+
 router.post("/bookRide", async (req, res, next) => {
   let booking = req.body.data;
   const pickupLocationId = req.body.data.pickupLocationId;
@@ -113,6 +126,7 @@ router.post("/bookRide", async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 router.post("/rebook/:id", async (req, res, next) => {
   const bookingInfo = await bookingController.getByBookingId(req.params.id);
 
