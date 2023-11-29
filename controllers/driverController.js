@@ -155,7 +155,7 @@ const driverController = {
                 include: [{model: models.Car, where: {carType: carType, serviceId: serviceId}}],
                 order: [[Sequelize.literal(`ST_Distance("location", ST_GeographyFromText('POINT(${targetLongitude} ${targetLatitude})'))`), 'ASC']],
               });
-            
+              console.log("near drivers", drivers);
               return drivers;
         } catch (err) {
             console.error('Error find driver:', err.message);
@@ -178,13 +178,13 @@ const driverController = {
 
         try {
             const driver = await Driver.findByPk(driverId, {
-                attributes: ['id', 'phoneNo', 'fullname', 'licensePlate', 'location'],
+                attributes: ['id', 'phoneNo', 'fullname', 'licensePlate', 'location', 'gender', 'avatarPath', 'status', 'socketId', 'location'],
             });
 
             return driver;
         } catch (error) {
-            console.error('Error find driver:', err.message);
-            throw err;
+            console.error('Error find driver:', error.message);
+            throw error;
         }
     },
 }

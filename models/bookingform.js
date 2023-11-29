@@ -19,16 +19,21 @@ module.exports = (sequelize, DataTypes) => {
       BookingForm.hasOne(models.Bill, {foreignKey: 'bookingFormId'});
       BookingForm.hasMany(models.Location, {foreignKey: 'bookingFormId'});
       BookingForm.belongsTo(models.BookingStatusId , {foreignKey: 'status'});
+      BookingForm.belongsTo(models.Location, { foreignKey: 'pickupLocationId', as: 'pickupLocation' });
+      BookingForm.belongsTo(models.Location, { foreignKey: 'destinationId', as: 'destination' });
     }
   }
   BookingForm.init({
-    pickupLocation: DataTypes.GEOMETRY('POINT'),
-    destination: DataTypes.GEOMETRY('POINT'),
+    pickupLocationId: DataTypes.INTEGER,
+    destinationId: DataTypes.INTEGER,
     bookingWay: DataTypes.INTEGER,
     status: DataTypes.INTEGER,
     bookingTime: DataTypes.DATE,
     Trip_Start_Time: DataTypes.TIME,
-    Trip_End_Time: DataTypes.TIME
+    Trip_End_Time: DataTypes.TIME,
+    distance: DataTypes.STRING,
+    service: DataTypes.STRING,
+    carType: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'BookingForm',

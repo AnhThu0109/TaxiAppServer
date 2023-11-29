@@ -19,6 +19,7 @@ router.get("/nearbydrivers", auth, async (req, res) => {
     }
 });
 //router.get("/:id", auth, driverController.findDriverById);
+
 router.get("/:id", auth, async (req, res) => {
     //console.log("req"+req.body.longitude)
     try {
