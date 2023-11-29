@@ -199,13 +199,13 @@ const driverController = {
 
         try {
             const driver = await Driver.findByPk(driverId, {
-                attributes: ['id', 'phoneNo', 'fullname', 'licensePlate', 'location'],
+                attributes: ['id', 'phoneNo', 'fullname', 'licensePlate', 'location', 'gender', 'avatarPath', 'status', 'socketId', 'location'],
             });
 
             return driver;
         } catch (error) {
-            console.error('Error find driver:', err.message);
-            throw err;
+            console.error('Error find driver:', error.message);
+            throw error;
         }
     },
 }
