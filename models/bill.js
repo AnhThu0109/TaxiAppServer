@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Bill.init({
     sum: DataTypes.DECIMAL,
-    paymentType: DataTypes.INTEGER,
-    status: DataTypes.INTEGER,
+    paymentType: DataTypes.INTEGER, //1: Cash; 2: Online
+    status: DataTypes.INTEGER, //1: Unpaid; 2: Paid; 3: Canceled
     note: DataTypes.TEXT,
     createdTime: DataTypes.DATE
   }, {

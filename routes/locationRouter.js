@@ -20,4 +20,6 @@ router.get('/search', [
     query('keyword').isString().notEmpty()
 ], auth, locationController.findLocationsByKeyword);
 
+router.post('/findByName', auth, locationController.findLocationByLocationName);
+
 module.exports = router;
