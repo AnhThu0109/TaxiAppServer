@@ -97,12 +97,16 @@ async function sendRequestToDrivers(driver,booking, io) {
     if (drivers_accepted.includes(driver.id)) {
       // Process the case where the driver did not reject the request
       console.log("Driver " + driver.id + " accepted the request");
+      const index = drivers_accepted.indexOf(driver.id);
+      if (index !== -1) {
+        drivers_accepted.splice(index, 1);
+      }
       return driver.id;
-  } else {
+    } else {
       // Process the case where the driver rejected the request
       console.log("Driver " + driver.id + " rejected the request");
       return null;
-  }
+    }
   } catch (err){
     console.error(`Error sending request to Driver ${driver.id}:`, err.message);
         throw err;
