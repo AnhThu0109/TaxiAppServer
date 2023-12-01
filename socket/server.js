@@ -13,7 +13,7 @@ distance.language('vn');
 distance.mode('driving');
 
 let drivers = [];
-
+let drivers_sending = [];
 let drivers_accepted = [];
 
 const handleDriverConnection = (socket) => {
@@ -84,12 +84,19 @@ async function sendRequestToDrivers(driver,booking, io) {
     console.log(booking);
     const longitude = booking.pickupLocation.coordinates[0];
     const latitude = booking.pickupLocation.coordinates[1];
-    io.to(driver.socketId).emit('rideRequest', {
-      requestId: 'uniqueRequestId',
-      location: { longitude, latitude },
-      bookingInfo: booking
-    });
-
+    if(drivers_sending.includes(driver.id)){
+      console.log("đang chờ tài xế "+driver.id + "phản hồi cuốc xe khác")
+      return null;
+    }
+    else{
+      io.to(driver.socketId).emit('rideRequest', {
+        requestId: 'uniqueRequestId',
+        location: { longitude, latitude },
+        bookingInfo: booking
+      });
+      drivers_sending.push(driver.id)
+    }
+    
     // Lắng nghe phản hồi từ tài xế
     console.log("Đang chờ phản hồi từ tài xế: " + driver.id)
     await sleep(30000);
@@ -98,8 +105,12 @@ async function sendRequestToDrivers(driver,booking, io) {
       // Process the case where the driver did not reject the request
       console.log("Driver " + driver.id + " accepted the request");
       const index = drivers_accepted.indexOf(driver.id);
+      const index_sending = drivers_sending.indexOf(driver.id);
       if (index !== -1) {
         drivers_accepted.splice(index, 1);
+      }
+      if(index_sending !== -1){
+        drivers_sending.splice(index_sending,1);
       }
       return driver.id;
     } else {
