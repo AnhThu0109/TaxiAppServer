@@ -22,10 +22,11 @@ const handleDriverConnection = (socket) => {
     socket.on('driver_connect', async (driver) => {
         console.log(driver.id);
         console.log("socket id: "+socket.id)
+        driver.socketId = socket.id;
        
         try {
            await driverController.update(driver,socket)
-          
+           socket.emit('updateSuccess', { msg: 'Update successful' });
         } catch (err){
            console.error('Error updating user:', err.message);
             //socket.emit('Error',{ message: err.message })
@@ -50,7 +51,7 @@ const handleDriverConnection = (socket) => {
   });
   socket.on('driver_arrived:'+ socket.id, (booking) => {
     console.log('Driver arrived:', socket.id);
-    //console.log('booking:' + booking.status);
+    booking.Trip_Start_Time = new Date();
     console.log('driverId:' + booking.driverId);
     // handle booking
     bookingController.updateDriverAccepted(booking);
@@ -60,15 +61,16 @@ const handleDriverConnection = (socket) => {
   socket.on('driver_completed:'+ socket.id, (booking) => {
     console.log('Driver completed:', socket.id);
     // handle booking
+    booking.Trip_End_Time = new Date();
     bookingController.updateDriverAccepted(booking);
     
   });
 
   socket.on('disconnect:'+socket.id, async (driver) => {
     console.log('Driver disconnected:', socket.id);
-    driver.status = 'Disconnect';
+    driver.status = 'disconnect';
     try {
-      await driverController.update(driver,socket)
+      await driverController.update(driver)
      
    } catch (err){
       console.error('Error updating user:', err.message);

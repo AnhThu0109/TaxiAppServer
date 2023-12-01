@@ -222,11 +222,14 @@ controller.save = async (booking) => {
 controller.updateDriverAccepted = (booking) => {
   return new Promise((resolve, reject) => {
     //status: 3 (tài xế đã nhận cuốc xe)
+    console.log("booking update info: "+ booking);
     BookingForm.update(
       {
         status: booking.status,
         driverId: booking.driverId,
-        distance: booking.distance
+        Trip_Start_Time: booking.Trip_Start_Time,
+        Trip_End_Time: booking.Trip_End_Time
+        
       },
       {
         where: {

@@ -108,15 +108,17 @@ const driverController = {
             });
         }
     },
-    update: async (driver, socket) => {
+    update: async (driver) => {
         //const { id, socketId } = req.body;
-        console.log(driver.status)
+        console.log(driver.socketid)
+        console.log("driver: "+JSON.stringify(driver, null, 2));
         try {
             const driverUpdate = await Driver.update({
-                socketId: socket.id,
-                status: driver.status,
+               status: driver.status,
+                socketId: driver.socketId,
                 location: driver.location
-            }, {
+            }, 
+                {
                 where: {
                     id: driver.id,
                 },
@@ -124,10 +126,10 @@ const driverController = {
             if (!driverUpdate) {
                 throw new Error('Update failed');
             }
-            socket.emit('updateSuccess', { msg: 'Update successful' });
+            
         } catch (err) {
             console.error('Error updating driver:', err.message);
-            socket.emit('updateError', { msg: 'Update failed', error: err.message });
+            throw err;
         }
     },
     NearByDrivers: async (targetLongitude, targetLatitude, carType, serviceId) => {
