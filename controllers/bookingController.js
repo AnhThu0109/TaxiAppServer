@@ -264,4 +264,17 @@ controller.updateBookingStatus = (booking) => {
   });
 };
 
+// Update a booking form by ID
+controller.updateBookingForm = (id, updatedData) => {
+  return new Promise((resolve, reject) => {
+    BookingForm.update(updatedData, {
+      where: {
+        id: id,
+      },
+    })
+      .then((data) => resolve(data))
+      .catch((error) => reject(new Error(error)));
+  });
+};
+
 module.exports = controller;

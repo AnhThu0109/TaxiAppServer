@@ -36,7 +36,6 @@ router.get("/driver/:id", auth, (req, res, next) => {
     .catch((error) => next(error));
 });
 
- 
 router.post("/bookRide", async (req, res, next) => {
   let booking = req.body.data;
   let bookingId = req.body.bookingId;
@@ -66,7 +65,6 @@ router.post("/bookRide", async (req, res, next) => {
     } else {
       //Tìm booking đã lưu xuống database
       savedBooking = await bookingController.getByBookingId(bookingId);
-
     }
 
     //Tìm tài xế gần vị trí khách hàng theo loại xe và dịch vụ yêu cầu
@@ -77,8 +75,8 @@ router.post("/bookRide", async (req, res, next) => {
       Number(booking.service)
     );
     //console.log()
-    drivers.map(d => console.log(d.toJSON()));
-    
+    drivers.map((d) => console.log(d.toJSON()));
+
     //gửi lần lượt booking tới từng tài xế
     for (const driver of drivers) {
       try {
@@ -89,26 +87,25 @@ router.post("/bookRide", async (req, res, next) => {
           const updateBooking = {
             id: savedBooking.id,
             status: 3, //tài xế đã nhận cuốc xe
-            driverId: driverId
+            driverId: driverId,
           };
-          
+
           await bookingController.updateDriverAccepted(updateBooking);
           //Lấy thông tin tài xế nhận cuốc xe
           const driver_accepted = await driverController.findDriverById(
             driverId
           );
           //gửi thông tin tài xế cho admin qua socket.io
-          io.to(booking.socketId).emit('bookingAccept', {
-
-            driverInfo: driver_accepted
-
+          io.to(booking.socketId).emit("bookingAccept", {
+            driverInfo: driver_accepted,
           });
-          return res.status(200).send({driver_accepted, bookingId: savedBooking.id});
+          return res
+            .status(200)
+            .send({ driver_accepted, bookingId: savedBooking.id });
         }
-
       } catch (err) {
-        console.error('Error sending ride request:', err.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error("Error sending ride request:", err.message);
+        res.status(500).json({ error: "Internal Server Error" });
       }
     }
     const updateBooking = {
@@ -117,103 +114,43 @@ router.post("/bookRide", async (req, res, next) => {
     };
     await bookingController.updateBookingStatus(updateBooking);
     res.status(404).send({
-      message: 'Không tìm thấy tài xế!',
-      data: savedBooking
+      message: "Không tìm thấy tài xế!",
+      data: savedBooking,
     });
   } catch (err) {
     console.error("Error sending ride request:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
-
   }
-
-
 });
-/*
-router.post("/rebook/:id", async (req, res, next) => {
-  const bookingInfo = await bookingController.getByBookingId(req.params.id);
 
-  const [pick_longitude, pick_latitude] = [
-    bookingInfo.pickupLocation.longitude,
-    bookingInfo.pickupLocation.latitude,
-  ];
-  let booking = {
-    sum: Number(bookingInfo.Bill.sum),
-    pickupLocation: {
-      type: "Point",
-      coordinates: [pick_longitude, pick_latitude],
-    },
-  };
+router.get("/customer/:id", auth, (req, res, next) => {
+  bookingController
+    .getByCustomerId(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((error) => next(error));
+});
 
-  const io = req.app.io;
+router.get("/:id", auth, (req, res, next) => {
+  bookingController
+    .getByBookingId(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((error) => next(error));
+});
 
+router.put("/:id/update", auth, async (req, res, next) => {
   try {
-    //Cập nhật lại status là On Progress
-    let updateBooking = {
-      id: bookingInfo.id,
-      status: 1, // No driver accepted
-    };
-    await bookingController.updateBookingStatus(updateBooking);
-    //Tìm tài xế gần vị trí khách hàng
-    const drivers = await driverController.NearByDrivers(
-      pick_longitude,
-      pick_latitude
-    );
-    let driverAccepted = false;
+    const { id } = req.params;
+    const updatedBookingForm = req.body; 
 
-    //gửi lần lượt booking tới từng tài xế
-    for (const driver of drivers) {
-      try {
-        const driverId = await sendRequestToDrivers(driver, booking, io);
-
-        if (driverId) {
-          console.log("id tài xế nhận cuốc xe: " + driverId);
-          updateBooking = {
-            id: bookingInfo.id,
-            status: 3, //tài xế đã nhận cuốc xe
-            driverId: driverId,
-          };
-          await bookingController.updateDriverAccepted(updateBooking);
-          const driver_accepted = await driverController.findDriverById(
-            driverId
-          );
-          return res.status(200).send(driver_accepted);
-        }
-      } catch (error) {
-        console.error(
-          `Error sending request to Driver ${driver.id}:`,
-          error.message
-        );
-        // Nếu có lỗi, tiếp tục với tài xế tiếp theo
-      }
-    }
-    // Nếu không có driver nhận cuốc
-    updateBooking = {
-      id: bookingInfo.id,
-      status: 2, // No driver accepted
-    };
-    await bookingController.updateBookingStatus(updateBooking);
-    res.status(404).send({ message: "Không tìm thấy tài xế!" });
-   
-  } catch (err) {
-    console.error("Error sending ride request:", err.message);
+    const result = await bookingController.updateBookingForm(id, updatedBookingForm);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error updating booking form:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
-});*/
-router.get("/customer/:id", auth, (req, res, next) => {
-    bookingController
-      .getByCustomerId(req.params.id)
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((error) => next(error));
-  });
-  
-router.get("/:id", auth, (req, res, next) => {
-    bookingController
-      .getByBookingId(req.params.id)
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((error) => next(error));
-  });
+});
 module.exports = router;
