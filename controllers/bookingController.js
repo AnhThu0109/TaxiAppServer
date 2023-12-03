@@ -5,7 +5,7 @@ let BookingForm = models.BookingForm;
 let Bill = models.Bill;
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
-const sequelize = new Sequelize("taxiappdb", "postgres", "123456", {
+const sequelize = new Sequelize("taxiapp", "postgres", "new_password", {
   host: "localhost",
   dialect: "postgres", // or 'mysql', 'sqlite', 'mssql', etc.
 });
@@ -47,7 +47,7 @@ controller.getAll = () => {
 controller.getByAdminId = (id) => {
   return new Promise((resolve, reject) => {
     BookingForm.findAll({
-      where: { adminId: id },
+      where: { adminId: id, bookingWay: 1 },
       include: [
         { model: models.Customer, attributes: ["id", "fullname", "phoneNo"] },
         {
@@ -197,6 +197,9 @@ controller.save = async (booking) => {
         bookingTime: booking.bookingTime,
         adminId: booking.adminId,
         customerId: booking.customerId,
+        distance: booking.distance,
+        service: booking.service,
+        carType: booking.carType,
       },
       { transaction }
     );

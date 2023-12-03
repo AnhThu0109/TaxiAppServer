@@ -59,7 +59,6 @@ router.post("/bookRide", async (req, res, next) => {
   const io = req.app.io;
 
   try {
-
     let savedBooking;
     if (!bookingId) {
       //lưu booking xuống database
@@ -74,8 +73,8 @@ router.post("/bookRide", async (req, res, next) => {
     const drivers = await driverController.NearByDrivers(
       pick_longitude,
       pick_latitude,
-      booking.carType,
-      booking.serviceId
+      Number(booking.carType),
+      Number(booking.service)
     );
     //console.log()
     drivers.map(d => console.log(d.toJSON()));
@@ -104,7 +103,7 @@ router.post("/bookRide", async (req, res, next) => {
             driverInfo: driver_accepted
 
           });
-          return res.status(200).send(driver_accepted);
+          return res.status(200).send({driver_accepted, bookingId: savedBooking.id});
         }
 
       } catch (err) {

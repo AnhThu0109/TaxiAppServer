@@ -63,7 +63,10 @@ app.use('/v1/services', require('./routes/serviceRouter'));
 app.use('/v1/distance', require('./routes/distanceRouter'));
 
 app.use('/v1/driverLocation/', require('./routes/driverLocationRouter'));
+
 app.use('/v1/bookingstatus', require('./routes/bookingStatusRouter'));
+
+app.use('/v1/notifications', require('./routes/notificationRouter'));
 
 
 app.get('/sync', (req, res) => {
