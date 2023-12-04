@@ -38,43 +38,24 @@ const locationController = {
 
   findLocationsByKeyword: async (req, res) => {
     const { keyword } = req.query;
-
+  
     try {
-      const locationsStartingWithKeyword = await Location.findAll({
+      const locations = await Location.findAll({
         where: {
           locationName: {
             [models.Sequelize.Op.iLike]: `${keyword}%`,
           },
         },
         attributes: ["id", "latitude", "longitude", "locationName"],
+        order: [["createdAt", "DESC"]], // Order by createdAt in descending order
+        limit: 3, // Limit the results to 3
       });
-
-      const otherLocations = await Location.findAll({
-        where: {
-          locationName: {
-            [models.Sequelize.Op.iLike]: `%${keyword}%`,
-          },
-        },
-        attributes: ["id", "latitude", "longitude", "locationName"],
-      });
-
-      // Filter out duplicates from otherLocations
-      const filteredOtherLocations = otherLocations.filter((location) => {
-        return !locationsStartingWithKeyword.some(
-          (startingLocation) => startingLocation.id === location.id
-        );
-      });
-
-      // Combine and limit results to 5
-      const results = locationsStartingWithKeyword
-        .concat(filteredOtherLocations)
-        .slice(0, 3);
-
-      res.status(200).json(results);
+  
+      res.status(200).json(locations);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  },
+  },  
 
   findLocationByLocationName: async (req, res) => {
     const { locationName } = req.body;

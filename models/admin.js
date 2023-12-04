@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Admin.hasMany(models.BookingForm, {foreignKey: 'adminId'});
       Admin.hasMany(models.BookingInfo, {foreignKey: 'adminId'});
       Admin.hasMany(models.Call, {foreignKey: 'adminId'});
+      Admin.hasMany(models.Notification, {foreignKey: 'adminId'});
     }
   }
   Admin.init({
