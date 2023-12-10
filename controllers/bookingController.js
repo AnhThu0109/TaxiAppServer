@@ -5,7 +5,7 @@ let BookingForm = models.BookingForm;
 let Bill = models.Bill;
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
-const sequelize = new Sequelize("taxiapp", "postgres", "new_password", {
+const sequelize = new Sequelize("taxiappdb", "postgres", "123456", {
   host: "localhost",
   dialect: "postgres", // or 'mysql', 'sqlite', 'mssql', etc.
 });
