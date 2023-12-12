@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     //1: On Progress (đang xử lý)
     //2: No drivers accepted the request
     //3: Running (đã có tài xế nhận cuốc)
-    //4: Completed
+    //4: Complete
     //5: Canceled
   }, {
     sequelize,

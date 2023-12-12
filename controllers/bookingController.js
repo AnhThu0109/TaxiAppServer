@@ -229,7 +229,8 @@ controller.updateDriverAccepted = (booking) => {
       {
         status: booking.status,
         driverId: booking.driverId,
-        distance: booking.distance
+        distance: booking.distance,
+        carId: booking.carId
       },
       {
         where: {
