@@ -5,7 +5,7 @@ let BookingForm = models.BookingForm;
 let Bill = models.Bill;
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
-const sequelize = new Sequelize("taxiapp", "postgres", "new_password", {
+const sequelize = new Sequelize("taxiappdb", "postgres", "123456", {
   host: "localhost",
   dialect: "postgres", // or 'mysql', 'sqlite', 'mssql', etc.
 });
@@ -225,12 +225,14 @@ controller.save = async (booking) => {
 controller.updateDriverAccepted = (booking) => {
   return new Promise((resolve, reject) => {
     //status: 3 (tài xế đã nhận cuốc xe)
+    console.log("booking update info: "+ booking);
     BookingForm.update(
       {
         status: booking.status,
         driverId: booking.driverId,
-        distance: booking.distance,
-        carId: booking.carId
+        Trip_Start_Time: booking.Trip_Start_Time,
+        Trip_End_Time: booking.Trip_End_Time
+        
       },
       {
         where: {

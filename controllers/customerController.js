@@ -80,8 +80,15 @@ const customerController = {
                 return;
             }
             const token = jwt.sign(phoneNo, process.env.ACCESS_TOKEN_SECRET);
-            res.send({ 
+            res.status(200).send({ 
                 msg: 'Login successful',
+                data: {
+                        id: user.id,
+                        phoneNo: user.phoneNo,
+                        fullname: user.fullname,
+                        gender: user.gender,
+                        email: user.email
+                },
                 token: token 
             });
         }

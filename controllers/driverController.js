@@ -25,19 +25,20 @@ const driverController = {
                 res.status(400).send('Fullname is missing')
                 return;
             }
+            /* //bỏ biển số xe khi đăng ký
             if (!licensePlate) {
                 res.status(400).send('License plate is missing')
                 return;
-            }
+            }*/
             else {
                 const driver = await Driver.findOne({ 
-                    where: [{ phoneNo : phoneNo}, {licensePlate: licensePlate}]
+                    where: [{ phoneNo : phoneNo}]
                  });
                                             
                                             
                 //console.log(user);
                 if (driver) {
-                    res.status(400).send('Phone number or License plate already exists')
+                    res.status(400).send('Phone number already exists')
                     return;
                 }
                 else {
@@ -63,16 +64,24 @@ const driverController = {
                         avatarPath: avatarPath,
                         licensePlate: licensePlate
                     })
-                    console.log(newDriver instanceof Driver);
-                    newDriver.save().then(result => {
-                        console.log(result);
+                    //console.log(newDriver instanceof Driver);
+                    let saveDriver;
+                    await newDriver.save().then(result => {
+                        
+                        saveDriver = result;
+                       
                     }).catch( error => {
                         console.log(error);
                     });
                     const token = jwt.sign(phoneNo, process.env.ACCESS_TOKEN_SECRET);
                     console.log(token)
-                    res.send({ 
-                        msg: 'Register successful',
+                    res.status(200).send({ 
+                        message: 'Đăng ký thành công!',
+                        data: {
+                            id: saveDriver.id,
+                            phoneNo: saveDriver.phoneNo,
+                            fullname: saveDriver.fullname
+                        },
                         token: token })
                 }
             }
@@ -102,21 +111,29 @@ const driverController = {
                 return;
             }
             const token = jwt.sign(phoneNo, process.env.ACCESS_TOKEN_SECRET);
-            res.send({ 
-                msg: 'Login successful',
+            res.status(200).send({ 
+                message: 'Đăng nhập thành công!',
+                data:{
+                    id: driver.id,
+                    phoneNo: driver.phoneNo,
+                    fullname: driver.fullname,
+                    licensePlate: driver.licensePlate
+                },
                 token: token 
             });
         }
     },
-    update: async (driver, socket) => {
+    update: async (driver) => {
         //const { id, socketId } = req.body;
-        console.log(driver.status)
+        console.log(driver.socketid)
+        console.log("driver: "+JSON.stringify(driver, null, 2));
         try {
             const driverUpdate = await Driver.update({
-                socketId: socket.id,
-                status: driver.status,
+               status: driver.status,
+                socketId: driver.socketId,
                 location: driver.location
-            }, {
+            }, 
+                {
                 where: {
                     id: driver.id,
                 },
@@ -124,10 +141,10 @@ const driverController = {
             if (!driverUpdate) {
                 throw new Error('Update failed');
             }
-            socket.emit('updateSuccess', { msg: 'Update successful' });
+            
         } catch (err) {
             console.error('Error updating driver:', err.message);
-            socket.emit('updateError', { msg: 'Update failed', error: err.message });
+            throw err;
         }
     },
     NearByDrivers: async (targetLongitude, targetLatitude, carType, serviceId) => {
