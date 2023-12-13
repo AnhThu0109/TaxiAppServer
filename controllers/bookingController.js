@@ -117,6 +117,7 @@ controller.getByDriverId = (id) => {
 controller.getByCustomerId = (id) => {
   return new Promise((resolve, reject) => {
     BookingForm.findAll({
+      
       where: { customerId: id },
       include: [
         { model: models.Customer, attributes: ["id", "fullname", "phoneNo"] },
@@ -152,6 +153,7 @@ controller.getByCustomerId = (id) => {
 controller.getByBookingId = (id) => {
   return new Promise((resolve, reject) => {
     BookingForm.findOne({
+      attributes: {exclude: ["customerId", "status", "carId", "pickupLocationId", "destinationId"]},
       where: { id: id },
       include: [
         { model: models.Customer, attributes: ["id", "fullname", "phoneNo"] },
@@ -198,7 +200,7 @@ controller.save = async (booking) => {
         adminId: booking.adminId,
         customerId: booking.customerId,
         distance: booking.distance,
-        service: booking.service,
+        service: booking.serviceId,
         carType: booking.carType,
       },
       { transaction }

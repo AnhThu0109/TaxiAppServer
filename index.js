@@ -16,10 +16,10 @@ const { handleDriverConnection } = require('./socket/server');
 io.on('connection', (socket) => {
     handleDriverConnection(socket)
 });
-
+/*
 server.listen(app.get('port'), () => {
     console.log(`Server is running at port ${app.get('port')}`);
-  });
+  });*/
 // Enable All CORS Requests
 app.use(cors()); 
 
@@ -83,6 +83,7 @@ app.set('port',process.env.PORT || 5000);
 io.listen(app.listen(app.get('port'), () =>{
     console.log(`Server is running at port ${app.get('port')}`);
 }))
+
 app.io = io.on("connection", function(socket){
-	console.log("Socket connected: " + socket.id);
+	//console.log("Socket connected: " + socket.id);
 });

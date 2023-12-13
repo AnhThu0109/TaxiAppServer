@@ -62,7 +62,8 @@ router.post("/bookRide", async (req, res, next) => {
     let savedBooking;
     if (!bookingId) {
       //lưu booking xuống database
-      savedBooking = await bookingController.save(booking);
+      const savebooking = await bookingController.save(booking);
+      savedBooking = await bookingController.getByBookingId(savebooking.id);
     } else {
       //Tìm booking đã lưu xuống database
       savedBooking = await bookingController.getByBookingId(bookingId);
@@ -76,7 +77,7 @@ router.post("/bookRide", async (req, res, next) => {
       pick_longitude,
       pick_latitude,
       Number(booking.carType),
-      Number(booking.service)
+      Number(booking.serviceId )
     );
     //console.log()
     drivers.map((d) => console.log(d.toJSON()));
@@ -85,6 +86,7 @@ router.post("/bookRide", async (req, res, next) => {
     for (const driver of drivers) {
       try {
         const driverId = await sendRequestToDrivers(driver, savedBooking, io);
+
         if (driverId) {
           console.log("id tài xế nhận cuốc xe: " + driverId);
           const car = await carController.getByDriverId(driverId);
