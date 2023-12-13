@@ -21,7 +21,7 @@ const handleDriverConnection = (socket) => {
 
     socket.on('driver_connect', async (driver) => {
         console.log(driver.id);
-        console.log("socket id: "+socket.id)
+        console.log("Driver available, socket id: "+socket.id)
         driver.socketId = socket.id;
        
         try {
@@ -83,9 +83,12 @@ const handleDriverConnection = (socket) => {
 
 async function sendRequestToDrivers(driver,booking, io) {
   try {
-    console.log(booking);
-    const longitude = booking.pickupLocation.coordinates[0];
-    const latitude = booking.pickupLocation.coordinates[1];
+    //console.log(booking);
+    /*const longitude = booking.pickupLocation.coordinates[0];
+    const latitude = booking.pickupLocation.coordinates[1];*/
+    const longitude = booking.pickupLocation.longitude;
+    const latitude = booking.pickupLocation.latitude;
+    const locationName = booking.pickupLocation.locationName;
     if(drivers_sending.includes(driver.id)){
       console.log("đang chờ tài xế "+driver.id + "phản hồi cuốc xe khác")
       return null;
@@ -93,7 +96,7 @@ async function sendRequestToDrivers(driver,booking, io) {
     else{
       io.to(driver.socketId).emit('rideRequest', {
         requestId: 'uniqueRequestId',
-        location: { longitude, latitude },
+        location: { longitude, latitude, locationName },
         bookingInfo: booking
       });
       drivers_sending.push(driver.id)
