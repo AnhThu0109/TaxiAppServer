@@ -84,7 +84,7 @@ router.post("/bookRide", async (req, res, next) => {
     //gửi lần lượt booking tới từng tài xế
     for (const driver of drivers) {
       try {
-        const driverId = await sendRequestToDrivers(driver, booking, io);
+        const driverId = await sendRequestToDrivers(driver, savedBooking, io);
         if (driverId) {
           console.log("id tài xế nhận cuốc xe: " + driverId);
           const car = await carController.getByDriverId(driverId);
