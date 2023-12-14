@@ -4,6 +4,7 @@ const router = express.Router();
 const bookingController = require("../controllers/bookingController");
 const locationController = require("../controllers/locationController");
 const driverController = require("../controllers/driverController");
+const carController = require("../controllers/carController");
 let models = require("../models");
 let Driver = models.Drivers;
 const auth = require("../middleware/auth");
@@ -66,6 +67,9 @@ router.post("/bookRide", async (req, res, next) => {
     } else {
       //Tìm booking đã lưu xuống database
       savedBooking = await bookingController.getByBookingId(bookingId);
+
+      //Update status to on progress
+      await bookingController.updateBookingForm(bookingId, {status: 2}); //2: Đang tìm tài xế
     }
 
     //Tìm tài xế gần vị trí khách hàng theo loại xe và dịch vụ yêu cầu
@@ -85,10 +89,12 @@ router.post("/bookRide", async (req, res, next) => {
 
         if (driverId) {
           console.log("id tài xế nhận cuốc xe: " + driverId);
+          const car = await carController.getByDriverId(driverId);
           const updateBooking = {
             id: savedBooking.id,
             status: 3, //tài xế đã nhận cuốc xe
             driverId: driverId,
+            carId: car.id
           };
 
           await bookingController.updateDriverAccepted(updateBooking);
@@ -111,7 +117,7 @@ router.post("/bookRide", async (req, res, next) => {
     }
     const updateBooking = {
       id: savedBooking.id,
-      status: 2, // No driver accepted
+      status: 10, // No driver accepted
     };
     await bookingController.updateBookingStatus(updateBooking);
     res.status(404).send({
