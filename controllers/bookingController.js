@@ -5,11 +5,13 @@ let BookingForm = models.BookingForm;
 let Bill = models.Bill;
 let Sequelize = require("sequelize");
 let Op = Sequelize.Op;
-const sequelize = new Sequelize("taxiappdb", "postgres", "123456", {
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+/*const sequelize = new Sequelize("taxiappdb", "postgres", "123456", {
   host: "localhost",
   dialect: "postgres", // or 'mysql', 'sqlite', 'mssql', etc.
-});
-
+});*/
+const sequelize = new Sequelize(config.database, config.username, config.password, config);
 controller.getAll = () => {
   return new Promise((resolve, reject) => {
     BookingForm.findAndCountAll({
@@ -195,7 +197,7 @@ controller.save = async (booking) => {
         pickupLocationId: booking.pickupLocationId,
         destinationId: booking.destinationId,
         bookingWay: booking.bookingWay, //1: Web; 2: App
-        status: 1,
+        status: 2,
         bookingTime: booking.bookingTime,
         adminId: booking.adminId,
         customerId: booking.customerId,

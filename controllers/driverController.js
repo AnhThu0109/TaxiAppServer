@@ -124,7 +124,10 @@ const driverController = {
         }
     },
     logout: async (req, res) => {
-        res.status(200).send('Đăng xuất thành công!');
+        res.status(200).send({
+            "success": true,
+            "messaage": "Logout successful."
+        });
     },
     update: async (driver) => {
         //const { id, socketId } = req.body;
