@@ -188,7 +188,17 @@ const driverController = {
 
     findAllDrivers: async (req, res) => {
         try {
-            const drivers = await Driver.findAll();
+            const drivers = await Driver.findAll( {
+                attributes: {exclude: ["password", "createdAt", "updatedAt"]},
+                include: [{
+                    model: models.Car,
+                    attributes: ["id", "carName", "carType"],
+                    include: [
+                      { model: models.Service, attributes: ["id", "serviceName"] },
+                      { model: models.CarType, attributes: ["id", "car_type"] },
+                    ]
+                  }]
+                });
             res.status(200).json(drivers);
         } catch (error) {
             console.error(error.message);
