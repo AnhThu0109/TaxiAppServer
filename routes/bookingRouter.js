@@ -69,7 +69,7 @@ router.post("/bookRide", async (req, res, next) => {
       savedBooking = await bookingController.getByBookingId(bookingId);
 
       //Update status to on progress
-      await bookingController.updateBookingForm(bookingId, {status: 1});
+      await bookingController.updateBookingForm(bookingId, {status: 2}); //2: Đang tìm tài xế
     }
 
     //Tìm tài xế gần vị trí khách hàng theo loại xe và dịch vụ yêu cầu
@@ -117,7 +117,7 @@ router.post("/bookRide", async (req, res, next) => {
     }
     const updateBooking = {
       id: savedBooking.id,
-      status: 2, // No driver accepted
+      status: 9, // No driver accepted
     };
     await bookingController.updateBookingStatus(updateBooking);
     res.status(404).send({
