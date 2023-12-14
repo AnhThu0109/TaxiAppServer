@@ -49,7 +49,10 @@ router.put("/updatedriverinfo/:id", auth, driverMiddleware.driverExists, async (
             return;
         }
         let driverUpdate = await driverController.update_driverInfo(req);
-        res.status(200).json(driverUpdate);
+        res.status(200).send({
+            success: true,
+            message: "Cập nhật thành công",
+            data: driverUpdate});
     } catch (err){
         console.log(err.message);
         res.status(400).send("Error"+ err.message);
