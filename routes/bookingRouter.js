@@ -117,7 +117,7 @@ router.post("/bookRide", async (req, res, next) => {
     }
     const updateBooking = {
       id: savedBooking.id,
-      status: 9, // No driver accepted
+      status: 10, // No driver accepted
     };
     await bookingController.updateBookingStatus(updateBooking);
     res.status(404).send({

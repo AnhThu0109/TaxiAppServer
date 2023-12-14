@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     //6: Đã đến nơi
     //7: Hoàn thành
     //8: Huỷ
-    //9: Không có tài xế nhận đơn
+    //10: Không có tài xế nhận đơn
   }, {
     sequelize,
     modelName: 'BookingStatusId',
