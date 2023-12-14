@@ -24,10 +24,10 @@ router.get('/driverid/:id', auth,(req, res, next) => {
 
 });
 
-router.put('/', auth,(req, res, next) => {
+router.put('/driverid/:driverId', auth,(req, res, next) => {
     
     carController
-        .updateCar(req.body)
+        .updateCar(req.body, req.params.driverId)
         .then(data => {
             res.status(201).send(data);
         })
@@ -52,10 +52,10 @@ router.post("/create", (req, res, next) => {
     .createCar(carData)
     .then((createdCar) => {
       res
-        .status(200)
+        .status(1000)
         .json({ message: "Car created successfully", car: createdCar });
     })
-    .catch((error) => next(error));
+    .catch((error) => next(res.status(1001).json({ message: "Car created fail!" + error.message })));
 });
 
 module.exports = router;

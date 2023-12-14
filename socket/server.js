@@ -96,7 +96,7 @@ async function sendRequestToDrivers(driver,booking, io) {
     else{
       io.to(driver.socketId).emit('rideRequest', {
         requestId: 'uniqueRequestId',
-        location: { longitude, latitude, locationName },
+        pickup_location: { longitude, latitude, locationName },
         bookingInfo: booking
       });
       drivers_sending.push(driver.id)

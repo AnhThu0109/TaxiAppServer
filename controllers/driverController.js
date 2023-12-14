@@ -123,6 +123,9 @@ const driverController = {
             });
         }
     },
+    logout: async (req, res) => {
+        res.status(200).send('Đăng xuất thành công!');
+    },
     update: async (driver) => {
         //const { id, socketId } = req.body;
         console.log(driver.socketid)
@@ -195,13 +198,53 @@ const driverController = {
 
         try {
             const driver = await Driver.findByPk(driverId, {
-                attributes: ['id', 'phoneNo', 'fullname', 'licensePlate', 'location', 'gender', 'avatarPath', 'status', 'socketId', 'location'],
-            });
+                attributes: {exclude: ["password", "createdAt", "updatedAt"]},
+                include: [{
+                    model: models.Car,
+                    attributes: ["id", "carName", "carType"],
+                    include: [
+                      { model: models.Service, attributes: ["id", "serviceName"] },
+                      { model: models.CarType, attributes: ["id", "car_type"] },
+                    ]
+                  }]
+                });
 
             return driver;
         } catch (error) {
             console.error('Error find driver:', error.message);
             throw error;
+        }
+    },
+    update_driverInfo: async (req) => {
+        //const { id, socketId } = req.body;
+        
+        //console.log("driver: "+JSON.stringify(driver, null, 2));
+        const oldDriver = req.oldDriver;
+        const id = req.params.id;
+        const body = req.body;
+        console.log("old"+oldDriver);
+        console.log("id"+id);
+        console.log("body"+body);
+        try {
+
+            const driverUpdate = await Driver.update({
+                phoneNo: body.phoneNo || oldDriver.phoneNo,
+                fullname: body.fullname || oldDriver.fullname,
+                email: body.email || oldDriver.email
+            },
+                {
+                    where: {
+                        id
+                    }, returning: true
+                })
+            if (!driverUpdate) {
+                throw new Error('Update failed');
+            }
+            return driverUpdate;
+            
+        } catch (err) {
+            console.error('Error updating driver:', err.message);
+            throw err;
         }
     },
 }

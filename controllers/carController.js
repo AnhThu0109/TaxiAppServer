@@ -16,8 +16,8 @@ controller.getAll = () => {
 };
 
 
-controller.updateCar = (newCar) => {
-    const driverId = newCar.driverId;
+controller.updateCar = (newCar,driverId) => {
+    //const driverId = newCar.driverId;
     //const updatestatus_description = status.status_description;
     
     return new Promise((resolve, reject) => {

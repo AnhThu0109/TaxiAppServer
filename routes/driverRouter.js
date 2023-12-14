@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const driverController = require('../controllers/driverController');
 const auth = require("../middleware/auth");
-
+const driverMiddleware = require("../middleware/drivermiddleware")
 router.post('/register', driverController.register);
 router.post('/login', driverController.login);
+router.post('/logout', driverController.logout);
 router.put('/update',driverController.update);
 router.get("/", auth, driverController.findAllDrivers);
 
@@ -34,5 +35,24 @@ router.get("/:id", auth, async (req, res) => {
         res.status(400).send("Error"+ err.message);
     }
 });
-
+router.put("/updatedriverinfo/:id", auth, driverMiddleware.driverExists, async (req, res, next) => {
+    const {body, params:{id}, oldDriver} = req;
+    console.log("oldDriver: "+oldDriver.id);
+    console.log("id: "+id);
+    try {
+        
+        if (id != oldDriver.id) {
+            res.status(403).send({
+                success: false,
+                message: "You are not authorized to carry out this action",
+            })
+            return;
+        }
+        let driverUpdate = await driverController.update_driverInfo(req);
+        res.status(200).json(driverUpdate);
+    } catch (err){
+        console.log(err.message);
+        res.status(400).send("Error"+ err.message);
+    }
+})
 module.exports = router;
