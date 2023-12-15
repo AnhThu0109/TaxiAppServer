@@ -9,16 +9,8 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    
     return Promise.all([
-      queryInterface.addColumn('BookingForms', 'Trip_Start_Time',
-      {
-        type: Sequelize.DATE
-      }
-      ), queryInterface.addColumn('BookingForms', 'Trip_End_Time',
-      {
-        type: Sequelize.DATE
-      })
+      queryInterface.removeColumn('BookingForms', 'Trip_End_Time'), queryInterface.removeColumn('BookingForms', 'Trip_Start_Time')
     ]);
   },
 
@@ -29,9 +21,5 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    return Promise.all([
-      queryInterface.removeColumn('BookingForms', 'Trip_Start_Time'),
-      queryInterface.removeColumn('BookingForms', 'Trip_End_Time')
-    ]);
   }
 };

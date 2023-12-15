@@ -29,8 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     bookingWay: DataTypes.INTEGER, //1: Web; 2: App
     status: DataTypes.INTEGER,
     bookingTime: DataTypes.DATE,
-    Trip_Start_Time: DataTypes.TIME,
-    Trip_End_Time: DataTypes.TIME,
+    Trip_Start_Time: DataTypes.DATE,
+    Trip_End_Time: DataTypes.DATE,
     distance: DataTypes.STRING,
     service: DataTypes.STRING, //1: Standard; 2: Plus
     carType: DataTypes.STRING //1: Motorcycle; 2: Car

@@ -244,7 +244,16 @@ controller.updateDriverAccepted = (booking) => {
         },
       }
     )
-      .then((data) => resolve(data))
+      .then(() => {
+        return BookingForm.findOne({
+          where: {
+            id: booking.id,
+          },
+          include: [
+            { model: models.BookingStatusId, attributes: ["id", "status_description"] },]
+        });
+      })
+      .then((updatedBooking) => resolve(updatedBooking))
       .catch((error) => reject(new Error(error)));
   });
 };
