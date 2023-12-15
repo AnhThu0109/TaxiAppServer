@@ -147,6 +147,35 @@ const customerController = {
             res.status(500).send({ message: 'Internal Server Error' });
         }
     },
+    updateCustomerInfo: async (req) => {
+        const oldCustomer = req.oldCustomer;
+        const id = req.params.id;
+        const body = req.body;
+        console.log("old"+oldCustomer);
+        console.log("id"+id);
+        console.log("body"+body);
+        try {
+
+            const customerUpdate = await Customer.update({
+                phoneNo: body.phoneNo || oldCustomer.phoneNo,
+                fullname: body.fullname || oldCustomer.fullname,
+                email: body.email || oldCustomer.email
+            },
+                {
+                    where: {
+                        id
+                    }, returning: true
+                })
+            if (!customerUpdate) {
+                throw new Error('Update failed');
+            }
+            return customerUpdate;
+            
+        } catch (err) {
+            console.error('Error updating driver:', err.message);
+            throw err;
+        }
+    }
 
 }
 module.exports = customerController
