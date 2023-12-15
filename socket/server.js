@@ -45,7 +45,7 @@ const handleDriverConnection = (socket) => {
     const driverId = booking.driverId;
     //const socketId = socket.id;
     drivers_accepted.push(driverId);
-    
+
   });
   socket.on('driver_arrived:' + socket.id, async (booking) => {
     console.log('Driver arrived:', socket.id);
@@ -54,7 +54,7 @@ const handleDriverConnection = (socket) => {
     // handle booking
     booking.status = 4;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
-    console.log("status:" + updateBooking)
+    //console.log("status:" + updateBooking)
     socket.to(booking.socketid).emit('booking_status', {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
@@ -62,14 +62,27 @@ const handleDriverConnection = (socket) => {
     });
 
   });
+  socket.on('driver_location', async (driver) => {
+    //console.log(driver.id);
+    //console.log("Driver available, socket id: " + socket.id)
+    driver.socketId = socket.id;
 
+    try {
+      await driverController.update(driver, socket)
+      socket.emit('updateSuccess', { msg: 'Update successful' });
+    } catch (err) {
+      console.error('Error updating driver:', err.message);
+      //socket.emit('Error',{ message: err.message })
+    }
+
+  })
   socket.on('driver_completed:' + socket.id, async (booking) => {
     console.log('Driver completed:', socket.id);
     // handle booking
     booking.Trip_End_Time = new Date();
     booking.status = 7;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
-    console.log("status:" + updateBooking)
+    //console.log("status:" + updateBooking)
     socket.to(booking.socketid).emit('booking_status', {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
