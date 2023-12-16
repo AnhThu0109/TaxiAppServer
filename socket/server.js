@@ -64,7 +64,7 @@ const handleDriverConnection = (socket) => {
   socket.on('driver_arrived:' + socket.id, async (booking) => {
     console.log('Driver arrived:', socket.id);
     booking.Trip_Start_Time = new Date();
-    console.log('driverId:' + booking.driverId);
+    //console.log('driverId:' + booking.driverId);
     // handle booking
     booking.status = 4;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
@@ -73,6 +73,10 @@ const handleDriverConnection = (socket) => {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
 
+    });
+    socket.broadcast.emit("admin_check_status", {
+      bookingId: booking.id,
+      status: updateBooking.BookingStatusId
     });
   });
   
@@ -98,6 +102,10 @@ const handleDriverConnection = (socket) => {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
 
+    });
+    socket.broadcast.emit("admin_check_status", {
+      bookingId: booking.id,
+      status: updateBooking.BookingStatusId
     });
     let driver = {
       id: booking.driverId,
@@ -148,7 +156,7 @@ async function sendRequestToDrivers(driver, booking, io) {
     const latitude = booking.pickupLocation.latitude;
     const locationName = booking.pickupLocation.locationName;
     if (drivers_sending.includes(driver.id)) {
-      console.log("đang chờ tài xế id:  " + driver.id + "phản hồi cuốc xe khác")
+      console.log("đang chờ tài xế id:  " + driver.id + " phản hồi cuốc xe khác")
       return null;
     }
     else {
