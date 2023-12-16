@@ -137,7 +137,7 @@ const handleDriverConnection = (socket) => {
   socket.on('check_location', async (booking) => {
     console.log('socketid:', socket.id);
     const driver_accepted = await driverController.findDriverById(
-      booking.driverId
+      booking.id
     );
     socket.emit('driver_location', {
       driver_location: driver_accepted.location.coordinates
