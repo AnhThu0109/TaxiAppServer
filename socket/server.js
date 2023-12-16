@@ -28,6 +28,11 @@ const handleDriverConnection = (socket) => {
       console.error('Error updating user:', err.message);
       //socket.emit('Error',{ message: err.message })
     }
+    const index_sending = drivers_sending.indexOf(driver.id);
+      
+      if (index_sending !== -1) {
+        drivers_sending.splice(index_sending, 1);
+      }
 
   })
 
