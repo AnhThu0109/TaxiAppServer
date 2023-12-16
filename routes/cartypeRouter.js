@@ -25,5 +25,25 @@ router.post('/', auth, (req, res, next) => {
         })
         .catch(error => next(error));
 });
-
+router.put("/update/:id", async (req, res, next) => {
+    const id = req.params.id;
+    const updatedData = req.body; // The updated data provided in the request body
+  
+    try {
+      const updatedCarType =
+        await cartypeController.updateCarType(
+          id,
+          updatedData
+        );
+      res.status(200).json(updatedCarType);
+    } catch (error) {
+      next(error);
+    }
+  });
+  router.delete('/delete/:id', (req, res) => {
+    const id = req.params.id;
+    cartypeController.deleteCarType(id)
+    .then(message => res.status(200).json({ success: true, message }))
+    .catch(error => res.status(400).json({ success: false, error: error.message }));
+  })
 module.exports = router;

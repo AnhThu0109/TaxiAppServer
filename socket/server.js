@@ -28,6 +28,11 @@ const handleDriverConnection = (socket) => {
       console.error('Error updating user:', err.message);
       //socket.emit('Error',{ message: err.message })
     }
+    const index_sending = drivers_sending.indexOf(driver.id);
+      
+      if (index_sending !== -1) {
+        drivers_sending.splice(index_sending, 1);
+      }
 
   })
 
@@ -38,51 +43,81 @@ const handleDriverConnection = (socket) => {
   });
 
   //tài xế nhận cuốc xe
-  socket.on('driver_accepted:' + socket.id, async(booking) => {
+  socket.on('driver_accepted:' + socket.id, async (driver) => {
     console.log('Driver accepted:', socket.id);
     //console.log('booking:' + booking.status);
-    console.log('driverId:' + booking.driverId);
+    console.log('driverId:' + driver.driverId);
     // handle booking
-    const driverId = booking.driverId;
+    const driverId = driver.driverId;
+    driver.status = "On Progress"
     //const socketId = socket.id;
     drivers_accepted.push(driverId);
-    booking.status = 3;
-    const updateBooking = await bookingController.updateDriverAccepted(booking);
-    socket.emit('booking_status', {
-      bookingId: booking.id,
-      status: updateBooking.BookingStatusId
-    });
-  });
+    try {
+      await driverController.update(driver)
+      socket.emit('updateSuccess', { msg: 'Update successful' });
+    } catch (err) {
+      console.error('Error updating driver:', err.message);
+      //socket.emit('Error',{ message: err.message })
+    }
 
-  //tài xế đến
+
+  });
   socket.on('driver_arrived:' + socket.id, async (booking) => {
     console.log('Driver arrived:', socket.id);
     booking.Trip_Start_Time = new Date();
-    console.log('driverId:' + booking.driverId);
+    //console.log('driverId:' + booking.driverId);
     // handle booking
     booking.status = 4;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
-    console.log("status:" + updateBooking)
-    socket.emit('booking_status', {
+    //console.log("status:" + updateBooking)
+    socket.to(booking.socketid).emit('booking_status', {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
     });
-
+    socket.broadcast.emit("admin_check_status", {
+      bookingId: booking.id,
+      status: updateBooking.BookingStatusId
+    });
   });
+  
+  socket.on('driver_location', async (driver) => {
+   
+    try {
+      await driverController.update(driver, socket)
+      socket.emit('updateSuccess', { msg: 'Update successful' });
+    } catch (err) {
+      console.error('Error updating driver:', err.message);
+      //socket.emit('Error',{ message: err.message })
+    }
 
-  //hoàn thành chuyến
+  })
   socket.on('driver_completed:' + socket.id, async (booking) => {
     console.log('Driver completed:', socket.id);
     // handle booking
     booking.Trip_End_Time = new Date();
     booking.status = 7;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
-    console.log("status:" + updateBooking)
-    socket.emit('booking_status', {
+    //console.log("status:" + updateBooking)
+    socket.to(booking.socketid).emit('booking_status', {
+      bookingId: booking.id,
+      status: updateBooking.BookingStatusId
+
+    });
+    socket.broadcast.emit("admin_check_status", {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
     });
-
+    let driver = {
+      id: booking.driverId,
+      status: "available"
+    };
+    try {
+      await driverController.update(driver)
+      socket.emit('updateSuccess', { msg: 'Update successful' });
+    } catch (err) {
+      console.error('Error updating driver:', err.message);
+      //socket.emit('Error',{ message: err.message })
+    }
   });
 
   socket.on('disconnect:' + socket.id, async (driver) => {
@@ -120,11 +155,11 @@ async function sendRequestToDrivers(driver, booking, io) {
     const longitude = booking.pickupLocation.longitude;
     const latitude = booking.pickupLocation.latitude;
     const locationName = booking.pickupLocation.locationName;
-    // if (drivers_sending.includes(driver.id)) {
-    //   console.log("đang chờ tài xế " + driver.id + "phản hồi cuốc xe khác")
-    //   return null;
-    // }
-    // else {
+    if (drivers_sending.includes(driver.id)) {
+      console.log("đang chờ tài xế id:  " + driver.id + " phản hồi cuốc xe khác")
+      return null;
+    }
+    else {
       io.to(driver.socketId).emit('rideRequest', {
         requestId: 'uniqueRequestId',
         pickup_location: { longitude, latitude, locationName },
@@ -134,7 +169,7 @@ async function sendRequestToDrivers(driver, booking, io) {
     // }
 
     // Lắng nghe phản hồi từ tài xế
-    console.log("Đang chờ phản hồi từ tài xế: " + driver.id)
+    console.log("Đang chờ phản hồi từ tài xế id: " + driver.id)
     await sleep(30000);
     // Xử lý timeout nếu tài xế không phản hồi sau một khoảng thời gian nhất định
     if (drivers_accepted.includes(driver.id)) {
