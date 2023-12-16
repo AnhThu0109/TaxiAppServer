@@ -197,7 +197,8 @@ const driverController = {
                       { model: models.Service, attributes: ["id", "serviceName"] },
                       { model: models.CarType, attributes: ["id", "car_type"] },
                     ]
-                  }]
+                  }],
+                order: [["id", 'ASC']],
                 });
             res.status(200).json(drivers);
         } catch (error) {
@@ -260,5 +261,22 @@ const driverController = {
             throw err;
         }
     },
+    deleteDriver: async (id) => {
+        try {
+            // Check if the driver with the given ID exists
+            const driver = await Driver.findByPk(id);
+    
+            if (!driver) {
+                throw new Error('Driver not found.');
+            }
+    
+            // Delete the driver
+            await driver.destroy();
+    
+            return 'Driver deleted successfully.';
+        } catch (error) {
+            throw new Error(error.message || 'Error deleting driver.');
+        }
+    }
 }
 module.exports = driverController

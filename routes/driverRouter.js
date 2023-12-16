@@ -58,4 +58,10 @@ router.put("/updatedriverinfo/:id", auth, driverMiddleware.driverExists, async (
         res.status(400).send("Error"+ err.message);
     }
 })
+router.delete('/delete/:id', (req, res) => {
+    const id = req.params.id;
+    driverController.deleteDriver(id)
+    .then(message => res.status(200).json({ success: true, message }))
+    .catch(error => res.status(400).json({ success: false, error: error.message }));
+  })
 module.exports = router;

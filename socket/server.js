@@ -74,8 +74,8 @@ const handleDriverConnection = (socket) => {
       status: updateBooking.BookingStatusId
 
     });
-
   });
+  
   socket.on('driver_location', async (driver) => {
    
     try {
@@ -148,7 +148,7 @@ async function sendRequestToDrivers(driver, booking, io) {
     const latitude = booking.pickupLocation.latitude;
     const locationName = booking.pickupLocation.locationName;
     if (drivers_sending.includes(driver.id)) {
-      console.log("đang chờ tài xế " + driver.id + "phản hồi cuốc xe khác")
+      console.log("đang chờ tài xế id:  " + driver.id + "phản hồi cuốc xe khác")
       return null;
     }
     else {
@@ -161,7 +161,7 @@ async function sendRequestToDrivers(driver, booking, io) {
     }
 
     // Lắng nghe phản hồi từ tài xế
-    console.log("Đang chờ phản hồi từ tài xế: " + driver.id)
+    console.log("Đang chờ phản hồi từ tài xế id: " + driver.id)
     await sleep(30000);
     // Xử lý timeout nếu tài xế không phản hồi sau một khoảng thời gian nhất định
     if (drivers_accepted.includes(driver.id)) {
