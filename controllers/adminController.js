@@ -199,5 +199,42 @@ const adminController = {
             res.status(500).send({ message: 'Internal Server Error' });
         }
     },
+
+    searchAdminByFullName: async (req, res) => {
+        try {
+            const {keyword} = req.query;
+
+            // Find admin by full name in the database
+            const admins = await Admin.findAll({
+                where: {
+                    fullname: {
+                        [Op.substring]: keyword
+                    }
+                }
+            });
+
+            if (!admins || admins.length === 0) {
+                res.status(404).send('No admin records found');
+                return;
+            }
+
+            // Map admin data to send only necessary information
+            const adminsData = admins.map(admin => ({
+                id: admin.id,
+                username: admin.username,
+                fullname: admin.fullname,
+                phoneNo: admin.phoneNo,
+                gender: admin.gender,
+                avatarPath: admin.avatarPath,
+                address: admin.address,
+                birthday: admin.birthday,
+            }));
+
+            res.status(200).json(adminsData);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    },
 }
 module.exports = adminController
