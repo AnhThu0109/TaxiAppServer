@@ -264,7 +264,7 @@ const driverController = {
     deleteDriver: async (id) => {
         try {
             // Check if the driver with the given ID exists
-            const driver = await Driver.findByPk(id);
+            const driver = await Driver.findOne({where:{id}});
     
             if (!driver) {
                 throw new Error('Driver not found.');
