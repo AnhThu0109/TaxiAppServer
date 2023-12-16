@@ -6,8 +6,8 @@ const auth = require('../middleware/auth');
 
 
 //distance.key(process.env.GOOGLE_API_KEY);
-// distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
-distance.key('AIzaSyDJpnqCPt1YUnCFns-VOegxFecDyrdnPRQ');
+distance.key('AIzaSyBv_3P3yNTVYWvi3fdSENaTV-jJ1XzWWAw');
+//distance.key('AIzaSyDJpnqCPt1YUnCFns-VOegxFecDyrdnPRQ');
 distance.units('metric');
 distance.language('vn');
 distance.mode('driving');
@@ -39,7 +39,8 @@ router.post('/',auth, async (req, res, next) => {
         } else {
             res.status(400).json({
                 status: false,
-                message: `${origin} is not reachable by land from ${destination}`
+                message: `${origin} is not reachable by land from ${destination}`,
+                api_response: distances.status,
             });
         }
     } catch (error) {
