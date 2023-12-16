@@ -208,7 +208,7 @@ const adminController = {
             const admins = await Admin.findAll({
                 where: {
                     fullname: {
-                        [Op.substring]: keyword
+                        [models.Sequelize.Op.iLike]: `%${keyword}%`
                     }
                 }
             });
