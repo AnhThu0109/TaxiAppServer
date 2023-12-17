@@ -5,6 +5,7 @@ const cors = require('cors');
 //var socket_io = require("socket.io");
 //var io = socket_io();
 var path = require("path");
+app.use(cors({ origin: '*' }));
 
 const http = require('http');
 const server = http.createServer(app);
@@ -27,7 +28,7 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     next();
   });*/
-app.use(cors({ origin: '*' }));
+
 /*
 io = require('socket.io')(server, {
     cors: {
