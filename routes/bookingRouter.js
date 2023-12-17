@@ -120,7 +120,11 @@ router.post("/bookRide", async (req, res, next) => {
       status: 10, // No driver accepted
     };
     await bookingController.updateBookingStatus(updateBooking);
-    res.status(404).send({
+    io.to(booking.socketId).emit("bookingReject", {
+      message: "Không tìm thấy tài xế!",
+      data: savedBooking,
+    });
+    return res.status(404).send({
       message: "Không tìm thấy tài xế!",
       data: savedBooking,
     });
