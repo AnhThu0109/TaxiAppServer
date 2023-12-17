@@ -22,10 +22,12 @@ server.listen(app.get('port'), () => {
   });*/
 // Enable All CORS Requests
 //app.use(cors()); 
+/*
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     next();
-  });
+  });*/
+app.use(cors({ origin: '*' }));
 app.use((req, res, next) => {
     req.io = io;
     next();
