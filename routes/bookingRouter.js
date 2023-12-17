@@ -117,10 +117,10 @@ router.post("/bookRide", async (req, res, next) => {
     }
     const updateBooking = {
       id: savedBooking.id,
-      status: 10, // No driver accepted
+      status: 3, // No driver accepted
     };
     await bookingController.updateBookingStatus(updateBooking);
-    io.to(booking.socketId).emit("bookingReject", {
+    io.emit("bookingReject", {
       message: "Không tìm thấy tài xế!",
       data: savedBooking,
     });
