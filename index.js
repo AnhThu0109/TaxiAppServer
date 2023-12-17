@@ -13,10 +13,10 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 const { handleDriverConnection } = require('./socket/server');
-
+/*
 io.on('connection', (socket) => {
     handleDriverConnection(socket)
-});
+});*/
 /*
 server.listen(app.get('port'), () => {
     console.log(`Server is running at port ${app.get('port')}`);
@@ -101,4 +101,5 @@ io.listen(app.listen(app.get('port'), () =>{
 
 app.io = io.on("connection", function(socket){
 	//console.log("Socket connected: " + socket.id);
+    handleDriverConnection(socket);
 });
