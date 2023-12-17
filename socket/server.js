@@ -69,6 +69,7 @@ const handleDriverConnection = (socket) => {
     booking.status = 4;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
     //console.log("status:" + updateBooking)
+    console.log("send status to socket id: "+booking.socketid);
     socket.to(booking.socketid).emit('booking_status', {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
@@ -98,6 +99,7 @@ const handleDriverConnection = (socket) => {
     booking.status = 7;
     const updateBooking = await bookingController.updateDriverAccepted(booking);
     //console.log("status:" + updateBooking)
+    console.log("send status to socket id: "+booking.socketid);
     socket.to(booking.socketid).emit('booking_status', {
       bookingId: booking.id,
       status: updateBooking.BookingStatusId
