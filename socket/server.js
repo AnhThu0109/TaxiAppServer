@@ -64,7 +64,7 @@ const handleDriverConnection = (socket) => {
   socket.on('driver_arrived:' + socket.id, async (booking) => {
     console.log('Driver arrived:', socket.id);
     booking.Trip_Start_Time = new Date();
-    //console.log('driverId:' + booking.driverId);
+    console.log('thong tin driver gui len: ' + booking);
     // handle booking
     booking.status = 4;
     const updateBooking = await bookingController.updateDriverAccepted(booking);

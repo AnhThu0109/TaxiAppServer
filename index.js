@@ -21,7 +21,7 @@ server.listen(app.get('port'), () => {
     console.log(`Server is running at port ${app.get('port')}`);
   });*/
 // Enable All CORS Requests
-app.use(cors()); 
+//app.use(cors()); 
 
 app.use((req, res, next) => {
     req.io = io;
