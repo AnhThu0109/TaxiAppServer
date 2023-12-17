@@ -165,7 +165,8 @@ async function sendRequestToDrivers(driver, booking, io) {
         pickup_location: { longitude, latitude, locationName },
         bookingInfo: booking
       });
-      drivers_sending.push(driver.id)
+      //drivers_sending.push(driver.id)
+      addDriverWithTimeout(driver.id)
     }
 
     // Lắng nghe phản hồi từ tài xế
@@ -197,7 +198,21 @@ async function sendRequestToDrivers(driver, booking, io) {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+function addDriverWithTimeout(driverId) {
+  drivers_sending.push(driverId);
 
+  // Đặt hẹn giờ để xoá id sau 30 giây
+  setTimeout(() => {
+      removeDriver(driverId);
+  }, 30000);
+}
+function removeDriver(driverId) {
+  const index = drivers_sending.indexOf(driverId);
+  if (index !== -1) {
+      drivers_sending.splice(index, 1);
+      console.log(`Driver with id ${driverId} removed from drivers_sending array.`);
+  }
+}
 module.exports = {
   handleDriverConnection,
   sendRequestToDrivers

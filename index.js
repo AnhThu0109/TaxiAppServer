@@ -10,8 +10,13 @@ app.use(cors({ origin: '*' }));
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
-
+//const io = new Server(server);
+const io = require('socket.io')(server, {
+    cors: {
+      origin: true, // Replace with your React app's URL
+      methods: ["GET", "POST"]
+    }
+  });
 const { handleDriverConnection } = require('./socket/server');
 /*
 io.on('connection', (socket) => {
