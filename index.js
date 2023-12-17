@@ -28,6 +28,14 @@ app.use(function(req, res, next) {
     next();
   });*/
 app.use(cors({ origin: '*' }));
+io = require('socket.io')(server, {
+    cors: {
+        origin: "http://localhost:3000", // Thay thế với domain của client
+        methods: ["GET", "POST"]
+    }
+});
+
+
 app.use((req, res, next) => {
     req.io = io;
     next();
