@@ -135,7 +135,7 @@ const handleDriverConnection = (socket) => {
   });
   //web tổng đài viên
   socket.on('check_location', async (booking) => {
-    console.log('socketid:', socket.id);
+    console.log('check location socketid:', socket.id);
     const driver_accepted = await driverController.findDriverById(
       booking.id
     );
