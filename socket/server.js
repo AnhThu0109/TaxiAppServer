@@ -47,7 +47,7 @@ const handleDriverConnection = (socket) => {
     //console.log('booking:' + booking.status);
     console.log('driverId:' + driver.driverId);
     // handle booking
-    const driverId = driver.driverId;
+    const driverId = driver.id;
     driver.status = "On Progress"
     //const socketId = socket.id;
     drivers_accepted.push(driverId);
@@ -81,7 +81,7 @@ const handleDriverConnection = (socket) => {
   });
   
   socket.on('driver_location', async (driver) => {
-   
+   console.log('driver_location: '+driver.id)
     try {
       await driverController.update(driver, socket)
       socket.emit('updateSuccess', { msg: 'Update successful' });
